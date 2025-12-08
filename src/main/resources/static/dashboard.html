@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard - Gestión de Gastos</title>
+  <title>Dashboard - Gestión de Tareas</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -11,14 +11,13 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="brand">
-        <h1>💰 Gastos</h1>
+        <h1>📋 Tareas</h1>
       </div>
       <nav>
         <ul class="nav-list">
-		  <li class="nav-item active" data-section="gastos">🧾 Mis Gastos</li>
-          <li class="nav-item" data-section="categorias">🏷️ Categorías</li>
-          <li class="nav-item" data-section="nuevo">➕ Agregar Gasto</li>
-		  <li class="nav-item" data-section="nuevo-ingreso">💵 Agregar Ingreso</li>
+          <li class="nav-item active" data-section="tablero">🗂️ Tablero</li>
+          <li class="nav-item" data-section="recursos">🔧 Recursos</li>
+          <li class="nav-item" data-section="nueva-tarea">➕ Crear Tarea</li>
           <li class="nav-item logout" id="logoutBtn">🚪 Cerrar sesión</li>
         </ul>
       </nav>
@@ -29,168 +28,73 @@
 
     <!-- Main -->
     <main class="main">
-		<!-- Balance -->
-		<div id="balance" class="page">
-		  <div class="panel">
-		    <h3>Balance Total</h3>
-		    <p id="balanceTotal" class="highlight">$0.00</p>
-		  </div>
-		</div>
-
       <section class="content">
-        <!-- Overview -->
-        <div id="overview" class="page visible">
-          <div class="cards">
-            <div class="card">
-              <h3>Total gastado</h3>
-              <p id="totalGastado" class="highlight">$0.00</p>
-            </div>
-            <div class="card">
-              <h3>Cantidad de gastos</h3>
-              <p id="countGastos" class="highlight">0</p>
-            </div>
-            <div class="card">
-              <h3>Categorías</h3>
-              <p id="countCategorias" class="highlight">0</p>
-            </div>
-          </div>
+        <!-- Tablero estilo Trello -->
+		<div class="content">
+		  <!-- Tareas Creadas -->
+		  <div class="tarea-column" id="colTareasCreadas">
+		    <h3>📋 Tareas Creadas</h3>
+		    <ul id="listaTareasCreadas"></ul>
+		  </div>
 
-          <div class="recent panel">
-            <h3>Gastos recientes</h3>
-            <div class="table-wrapper">
-              <table id="tablaRecientes" class="table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Monto</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+		  <!-- Tareas En Proceso -->
+		  <div class="tarea-column" id="colTareasEnProceso">
+		    <h3>⚙️ En Proceso</h3>
+		    <ul id="listaTareasEnProceso"></ul>
+		  </div>
 
-        <!-- Gastos -->
-        <div id="gastos" class="page">
-          <div class="panel">
-            <h3>Mis Gastos</h3>
-            <div class="table-wrapper">
-              <table id="tablaGastos" class="table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Monto</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
+		  <!-- Tareas Terminadas -->
+		  <div class="tarea-column" id="colTareasTerminadas">
+		    <h3>✅ Terminadas</h3>
+		    <ul id="listaTareasTerminadas"></ul>
+		  </div>
+		</div>
+
+        <!-- Modal Recursos -->
+        <div id="modalRecursos" class="modal">
+          <div class="modal-content">
+            <span class="close" id="closeRecursos">&times;</span>
+            <h3>Recursos</h3>
+            <div class="recurso-form">
+              <input id="recursoNombre" placeholder="Nombre del recurso" />
+              <input id="recursoCantidad" type="number" min="1" placeholder="Cantidad" />
+              <input id="recursoUnidad" placeholder="Unidad de medida" />
+              <button id="btnCrearRecurso" class="btn">Crear</button>
             </div>
+            <ul id="listaRecursos" class="list"></ul>
           </div>
         </div>
-		
-		<!-- Ingresos -->
-		<div id="ingresos" class="page">
-		  <div class="panel">
-		    <h3>Mis Ingresos</h3>
-		    <div class="table-wrapper">
-		      <table id="tablaIngresos" class="table">
-		        <thead>
-		          <tr>
-		            <th>Fecha</th>
-		            <th>Descripción</th>
-		            <th>Categoría</th>
-		            <th>Monto</th>
-		            <th>Acciones</th>
-		          </tr>
-		        </thead>
-		        <tbody></tbody>
-		      </table>
-		    </div>
-		  </div>
-		</div>
 
+        <!-- Modal Crear Tarea -->
+        <div id="modalTarea" class="modal">
+          <div class="modal-content">
+            <span class="close" id="closeTarea">&times;</span>
+            <h3>Crear Tarea</h3>
+            <form id="formTarea" class="form">
+              <label>Título
+                <input id="tareaTitulo" type="text" maxlength="255" required />
+              </label>
 
-		<!-- Modal Categorías -->
-		<div id="modalCategorias" class="modal">
-		  <div class="modal-content">
-		    <span class="close" id="closeCategorias">&times;</span>
-		    <h3>Categorías</h3>
-		    <div class="categoria-form">
-		      <input id="categoriaNombre" placeholder="Nueva categoría" />
-		      <button id="btnCrearCategoria" class="btn">Crear</button>
-		    </div>
-		    <ul id="listaCategorias" class="list"></ul>
-		  </div>
-		</div>
+              <label>Descripción
+                <input id="tareaDescripcion" type="text" maxlength="255" />
+              </label>
 
+              <label>Fecha
+                <input id="tareaFecha" type="date" required />
+              </label>
 
-		<!-- Modal Agregar Gasto -->
-		<div id="modalGasto" class="modal">
-		  <div class="modal-content">
-		    <span class="close" id="closeModal">&times;</span>
-		    <h3>Agregar Gasto</h3>
-		    <form id="formGasto" class="form">
-		      <label>Descripción
-		        <input id="gastoDescripcion" type="text" maxlength="255" />
-		      </label>
+              <label>Recursos
+                <select id="tareaRecursos" multiple>
+                  <!-- opciones dinámicas -->
+                </select>
+              </label>
 
-		      <label>Monto
-		        <input id="gastoMonto" type="number" step="0.01" min="0" required />
-		      </label>
-
-		      <label>Fecha
-		        <input id="gastoFecha" type="date" required />
-		      </label>
-
-		      <label>Categoría
-		        <select id="gastoCategoria">
-		          <option value="">-- Sin categoría --</option>
-		        </select>
-		      </label>
-
-		      <div class="actions">
-		        <button type="submit" id="btnAgregarGasto" class="btn">Agregar</button>
-		      </div>
-		    </form>
-		  </div>
-		</div>
-		
-		<!-- Modal Agregar Ingreso -->
-		<div id="modalIngreso" class="modal">
-		  <div class="modal-content">
-		    <span class="close" id="closeIngreso">&times;</span>
-		    <h3>Agregar Ingreso</h3>
-		    <form id="formIngreso" class="form">
-		      <label>Descripción
-		        <input id="ingresoDescripcion" type="text" maxlength="255" />
-		      </label>
-
-		      <label>Monto
-		        <input id="ingresoMonto" type="number" step="0.01" min="0" required />
-		      </label>
-
-		      <label>Fecha
-		        <input id="ingresoFecha" type="date" required />
-		      </label>
-
-		      <label>Categoría
-		        <select id="ingresoCategoria">
-		          <option value="">-- Sin categoría --</option>
-		        </select>
-		      </label>
-
-		      <div class="actions">
-		        <button type="submit" id="btnAgregarIngreso" class="btn">Agregar</button>
-		      </div>
-		    </form>
-		  </div>
-		</div>
+              <div class="actions">
+                <button type="submit" id="btnCrearTarea" class="btn">Crear</button>
+              </div>
+            </form>
+          </div>
+        </div>
 
         <!-- Mensajes -->
         <div id="message" class="toast" role="status" aria-live="polite"></div>
