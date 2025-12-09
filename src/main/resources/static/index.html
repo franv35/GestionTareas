@@ -1,23 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Tareas</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bienvenido a NotApp</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="inicio">
+
+<body class="inicio" id="index">
   <header>
-    <h1>📋 Gestión de Tareas</h1>
+    <h1>Bienvenido a NotApp</h1>
+    <p>La forma más simple y eficiente de organizar tu vida.</p>
   </header>
 
-  <main>
-    <h2>Organiza tu trabajo, colabora mejor.</h2>
-    <p>Crea, asigna y gestiona tus tareas fácilmente. Controla recursos y estados para avanzar sin estrés.</p>
-    <div class="acciones">
-      <a href="login.html" class="btn">Iniciar sesión</a>
-      <a href="registro.html" class="btn btn-secundario">Crear cuenta</a>
+  <main class="index-options">
+    <!-- ESTUDIO -->
+    <div class="option-card" data-option="estudio">
+      <h2>📚 Estudio</h2>
+      <p>Organizá materias, entregas, exámenes y recordatorios.</p>
+      <button class="btn-option">Ver más</button>
+    </div>
+
+    <!-- TRABAJO -->
+    <div class="option-card" data-option="trabajo">
+      <h2>💼 Trabajo</h2>
+      <p>Gestioná proyectos, tareas y recursos de manera profesional.</p>
+      <button class="btn-option">Ver más</button>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="option-card" data-option="personal">
+      <h2>🏠 Personal</h2>
+      <p>Listas, ideas, compras, rutina: todo en un solo lugar.</p>
+      <button class="btn-option">Ver más</button>
     </div>
   </main>
+
+  <!-- MODAL GENERAL -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+
+      <div class="modal-img-container">
+        <!-- IMAGEN CUADRADA - la completarás vos -->
+        <img id="modalImg" src="" alt="imagen ilustrativa">
+      </div>
+
+      <h2 id="modalTitle"></h2>
+      <p id="modalText"></p>
+
+      <button id="btnGoRegister" class="btn">Crear una cuenta</button>
+    </div>
+  </div>
+
+  <script src="js/index.js"></script>
 </body>
 </html>
