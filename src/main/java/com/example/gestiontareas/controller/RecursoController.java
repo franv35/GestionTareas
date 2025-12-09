@@ -1,4 +1,4 @@
-package com.example.gestiongastos.controller;
+package com.example.gestiontareas.controller;
 
 import java.util.List;
 
@@ -10,34 +10,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.gestiongastos.dto.Request.CategoriaRequest;
-import com.example.gestiongastos.dto.Response.CategoriaResponse;
-import com.example.gestiongastos.services.CategoriaService;
+import com.example.gestiontareas.dto.Request.RecursoRequest;
+import com.example.gestiontareas.dto.Response.RecursoResponse;
+import com.example.gestiontareas.services.RecursoService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/categorias")
-public class CategoriaController {
-	private final CategoriaService categoriaService;
-    public CategoriaController(CategoriaService categoriaService) {
-        this.categoriaService = categoriaService;
+@RequestMapping("/api/recursos")
+public class RecursoController {
+
+    private final RecursoService recursoService;
+
+    public RecursoController(RecursoService recursoService) {
+        this.recursoService = recursoService;
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaResponse> create(@Valid @RequestBody CategoriaRequest req) {
-        return ResponseEntity.ok(categoriaService.create(req));
+    public ResponseEntity<RecursoResponse> create(@Valid @RequestBody RecursoRequest req) {
+        return ResponseEntity.ok(recursoService.create(req));
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaResponse>> listAll() {
-        return ResponseEntity.ok(categoriaService.listAll());
+    public ResponseEntity<List<RecursoResponse>> listAll() {
+        return ResponseEntity.ok(recursoService.listAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoriaService.getById(id));
+    public ResponseEntity<RecursoResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(recursoService.getById(id));
     }
 }
-
-

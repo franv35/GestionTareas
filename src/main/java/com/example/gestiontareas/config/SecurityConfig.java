@@ -1,4 +1,4 @@
-package com.example.gestiongastos.config;
+package com.example.gestiontareas.config;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.example.gestiongastos.security.JwtAuthenticationFilter;
+import com.example.gestiontareas.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {

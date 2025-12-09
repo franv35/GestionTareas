@@ -1,5 +1,3 @@
-
-
 const API = "http://localhost:8080/api";
 const messageEl = document.getElementById("message");
 
@@ -19,17 +17,19 @@ function authHeaders() {
   };
 }
 
-// objeto user que se llenará al inicio
+// usuario logueado
 let user = null;
 
-// función para mostrar mensajes
+// mostrar mensajes tipo toast
 function showMessage(text, time = 3000) {
   messageEl.textContent = text;
+  messageEl.style.display = "block";
   messageEl.style.opacity = "1";
   setTimeout(() => { messageEl.style.opacity = "0"; }, time);
+  setTimeout(() => { messageEl.style.display = "none"; }, time + 200);
 }
 
-// obtener info del usuario logueado usando el token
+// obtener info del usuario
 async function fetchUserInfo() {
   try {
     const res = await fetch(`${API}/usuarios/me`, { headers: authHeaders() });
@@ -50,376 +50,263 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-
-
-// UI nav
+// navegación sidebar
 document.querySelectorAll(".sidebar li[data-section]").forEach(li => {
   li.addEventListener("click", () => {
     document.querySelectorAll(".sidebar li").forEach(n => n.classList.remove("active"));
     li.classList.add("active");
+
     const section = li.getAttribute("data-section");
     document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
-    document.getElementById(section).classList.add("visible");
-    document.getElementById("pageTitle").textContent = li.textContent;
 
-    if (section === "gastos") fetchGastos();
-    if (section === "ingresos") fetchIngresos();
+    // mostrar la página correspondiente si existe
+    const page = document.getElementById(section);
+    if (page) page.classList.add("visible");
+
+    // opcional: cambiar título
+    const pageTitleEl = document.getElementById("pageTitle");
+    if (pageTitleEl) pageTitleEl.textContent = li.textContent;
+
+    // aquí podrías llamar fetchGastos / fetchIngresos si las agregas
   });
 });
 
-
-/* Fetch categories and gastos */
-async function fetchCategorias() {
+/* ==== FETCH DATA ==== */
+async function fetchRecursos() {
   try {
-    const res = await fetch(`${API}/categorias`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las categorías");
+    const res = await fetch(`${API}/recursos`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("No se pudieron cargar los recursos");
     const data = await res.json();
-    renderCategorias(data);
+    renderRecursos(data);
     return data;
   } catch (e) {
     console.error(e);
-    showMessage("Error cargando categorías");
+    showMessage("Error cargando recursos");
     return [];
   }
 }
 
-async function fetchGastos() {
+async function fetchTareasCreadas() {
   try {
-    const res = await fetch(`${API}/gastos/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar gastos");
+    const res = await fetch(`${API}/tareas-creadas/usuario/${user.id}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas creadas");
     const data = await res.json();
-    renderGastos(data);
-    updateOverview(data);
+    renderTareas("listaTareasCreadas", data);
+    attachDeleteHandlers("listaTareasCreadas");
     return data;
   } catch (e) {
     console.error(e);
-    showMessage("Error cargando gastos");
+    showMessage("Error cargando tareas creadas");
     return [];
   }
 }
 
-async function fetchIngresos() {
+async function fetchTareasEnProceso() {
   try {
-    const res = await fetch(`${API}/ingresos/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar ingresos");
+    const res = await fetch(`${API}/tareas-en-proceso/usuario/${user.id}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas en proceso");
     const data = await res.json();
-    renderIngresos(data);
+    renderTareas("listaTareasEnProceso", data);
+    attachDeleteHandlers("listaTareasEnProceso");
     return data;
   } catch (e) {
     console.error(e);
-    showMessage("Error cargando ingresos");
+    showMessage("Error cargando tareas en proceso");
     return [];
   }
 }
 
+async function fetchTareasTerminadas() {
+  try {
+    const res = await fetch(`${API}/tareas-terminadas/usuario/${user.id}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas terminadas");
+    const data = await res.json();
+    renderTareas("listaTareasTerminadas", data);
+    attachDeleteHandlers("listaTareasTerminadas");
+    return data;
+  } catch (e) {
+    console.error(e);
+    showMessage("Error cargando tareas terminadas");
+    return [];
+  }
+}
 
-/* Renderers */
-function renderCategorias(categorias) {
-  const gastoSelect = document.getElementById("gastoCategoria");
-  const ingresoSelect = document.getElementById("ingresoCategoria");
-
-  [gastoSelect, ingresoSelect].forEach(select => {
-    select.innerHTML = '<option value="">Sin categoría</option>';
-    categorias.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat.id;
-      option.textContent = cat.nombre;
-      select.appendChild(option);
-    });
+/* ==== RENDER ==== */
+function renderRecursos(recursos) {
+  const recursoSelect = document.getElementById("tareaRecursos");
+  recursoSelect.innerHTML = "";
+  recursos.forEach(r => {
+    const option = document.createElement("option");
+    option.value = r.id;
+    option.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`;
+    recursoSelect.appendChild(option);
   });
-	document.getElementById("countCategorias").textContent = categorias.length;
+
+  document.getElementById("listaRecursos").innerHTML = recursos
+    .map(r => `<li>${r.nombre} — ${r.cantidad} ${r.unidadMedida}</li>`)
+    .join("");
 }
 
-function renderGastos(list) {
-  const tbody = document.querySelector("#tablaGastos tbody");
-  const recent = document.querySelector("#tablaRecientes tbody");
-  tbody.innerHTML = "";
-  recent.innerHTML = "";
-
-  list.forEach(g => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${g.fecha}</td>
-      <td>${g.descripcion || "-"}</td>
-      <td>${g.categoriaNombre || "-"}</td>
-      <td>$${Number(g.monto).toFixed(2)}</td>
-      <td><button class="btn-delete" data-id="${g.id}">Eliminar</button></td>
+function renderTareas(listId, tareas) {
+  const ul = document.getElementById(listId);
+  ul.innerHTML = "";
+  tareas.forEach(t => {
+    const li = document.createElement("li");
+    li.classList.add("tarea-card");
+    li.innerHTML = `
+      <strong>${t.titulo}</strong><br>
+      <span>${t.descripcion || "-"}</span><br>
+      <small>${t.fecha}</small><br>
+      <em>Recursos: ${(t.recursos && t.recursos.length > 0) 
+        ? t.recursos.map(r => r.nombre).join(", ") 
+        : "—"}</em>
+      <div class="actions">
+        <button class="btn-delete" data-id="${t.id}">Eliminar</button>
+      </div>
     `;
-    tbody.appendChild(tr);
-
-    if (recent.children.length < 5) {
-      const tr2 = document.createElement("tr");
-      tr2.innerHTML = `
-        <td>${g.fecha}</td>
-        <td>${g.descripcion || "-"}</td>
-        <td>${g.categoriaNombre || "-"}</td>
-        <td>$${Number(g.monto).toFixed(2)}</td>
-      `;
-      recent.appendChild(tr2);
-    }
+    ul.appendChild(li);
   });
+}
 
-  // attach delete handlers para gastos
-  document.querySelectorAll(".btn-delete").forEach(btn => {
+/* ==== DELETE HANDLER ==== */
+function attachDeleteHandlers(listId) {
+  const ul = document.getElementById(listId);
+  ul.querySelectorAll(".btn-delete").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.target.dataset.id;
-      if (!confirm("Eliminar gasto?")) return;
+      if (!confirm("¿Eliminar tarea?")) return;
       try {
-        const res = await fetch(`${API}/gastos/${id}`, {
+        let endpoint = "";
+        if (listId === "listaTareasCreadas") endpoint = "tareas-creadas";
+        if (listId === "listaTareasEnProceso") endpoint = "tareas-en-proceso";
+        if (listId === "listaTareasTerminadas") endpoint = "tareas-terminadas";
+
+        const res = await fetch(`${API}/${endpoint}/${id}`, {
           method: "DELETE",
           headers: authHeaders()
         });
         if (!res.ok) throw new Error("No se pudo eliminar");
-        showMessage("Gasto eliminado");
-        await fetchGastos();
+        showMessage("Tarea eliminada");
+        await refreshAll();
       } catch (err) {
         console.error(err);
-        showMessage("Error eliminando gasto");
+        showMessage("Error eliminando tarea");
       }
     });
   });
-
-  document.getElementById("countGastos").textContent = list.length;
 }
 
+/* ==== CREATE RESOURCE ==== */
+document.getElementById("btnCrearRecurso").addEventListener("click", async () => {
+  const nombre = document.getElementById("recursoNombre").value.trim();
+  const cantidad = parseInt(document.getElementById("recursoCantidad").value);
+  const unidadMedida = document.getElementById("recursoUnidad").value.trim();
 
-function renderIngresos(ingresos) {
-  const tbody = document.querySelector('#tablaIngresos tbody');
-  tbody.innerHTML = '';
-
-  if (ingresos.length === 0) {
-    const fila = document.createElement('tr');
-    fila.innerHTML = `<td colspan="5" style="text-align:center;">Sin ingresos registrados</td>`;
-    tbody.appendChild(fila);
-    return;
+  if (!nombre || !cantidad || !unidadMedida) { 
+    showMessage("Completá todos los campos"); 
+    return; 
   }
 
-  ingresos.forEach(ingreso => {
-    const fila = document.createElement('tr');
-    fila.innerHTML = `
-      <td>${ingreso.fecha}</td>
-      <td>${ingreso.descripcion || '-'}</td>
-      <td>${ingreso.categoriaNombre || 'Sin categoría'}</td>
-      <td>$${Number(ingreso.monto).toFixed(2)}</td>
-      <td>
-        <button class="btn btn-danger" onclick="eliminarIngreso(${ingreso.id})">Eliminar</button>
-      </td>
-    `;
-    tbody.appendChild(fila);
-  });
-}
-
-async function eliminarIngreso(id) {
-  if (!confirm("¿Eliminar ingreso?")) return;
   try {
-    const res = await fetch(`${API}/ingresos/${id}`, {
-      method: "DELETE",
-      headers: authHeaders()
-    });
-    if (!res.ok) throw new Error("No se pudo eliminar ingreso");
-    showMessage("Ingreso eliminado");
-    await fetchIngresos();
-  } catch (err) {
-    console.error(err);
-    showMessage("Error eliminando ingreso");
-  }
-}
-
-
-
-function updateOverview(list) {
-  const total = list.reduce((s, g) => s + Number(g.monto || 0), 0);
-  document.getElementById("totalGastado").textContent = `$${total.toFixed(2)}`;
-}
-
-/* Create category */
-document.getElementById("btnCrearCategoria").addEventListener("click", async () => {
-  const nombre = document.getElementById("categoriaNombre").value.trim();
-  if (!nombre) { showMessage("Ingresá un nombre"); return; }
-  try {
-    const res = await fetch(`${API}/categorias`, {
+    const res = await fetch(`${API}/recursos`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ nombre })
+      body: JSON.stringify({ nombre, cantidad, unidadMedida })
     });
-    if (!res.ok) throw new Error("Error creando categoría");
-    document.getElementById("categoriaNombre").value = "";
-    showMessage("Categoría creada");
-	document.getElementById("modalCategorias").style.display = "none"; //cerrar modal
-	await refreshAll(); //actualizar todo
-    await refreshAll();
+    if (!res.ok) throw new Error("Error creando recurso");
+    showMessage("Recurso creado");
+    document.getElementById("recursoNombre").value = "";
+    document.getElementById("recursoCantidad").value = "";
+    document.getElementById("recursoUnidad").value = "";
+    closeModal(modalRecursos);
+    await fetchRecursos();
   } catch (e) {
     console.error(e);
-    showMessage("Error al crear categoría");
+    showMessage("Error al crear recurso");
   }
 });
 
-/* Add gasto */
-document.getElementById("formGasto").addEventListener("submit", async (ev) => {
+/* ==== CREATE TASK ==== */
+document.getElementById("formTarea").addEventListener("submit", async (ev) => {
   ev.preventDefault();
-  const descripcion = document.getElementById("gastoDescripcion").value.trim();
-  const monto = parseFloat(document.getElementById("gastoMonto").value);
-  const fecha = document.getElementById("gastoFecha").value;
-  const categoriaId = document.getElementById("gastoCategoria").value || null;
+  const titulo = document.getElementById("tareaTitulo").value.trim();
+  const descripcion = document.getElementById("tareaDescripcion").value.trim();
+  const fecha = document.getElementById("tareaFecha").value;
+  const recursoIds = Array.from(document.getElementById("tareaRecursos").selectedOptions)
+                          .map(o => Number(o.value));
 
-  if (!monto || !fecha) { showMessage("Completá monto y fecha"); return; }
+  if (!titulo || !fecha) { 
+    showMessage("Completá título y fecha"); 
+    return; 
+  }
 
   try {
-    const res = await fetch(`${API}/gastos`, {
+    const res = await fetch(`${API}/tareas-creadas`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({
-        descripcion,
-        monto,
-        fecha,
-        usuarioId: user.id,
-        categoriaId: categoriaId ? Number(categoriaId) : null
-      })
+      body: JSON.stringify({ titulo, descripcion, fecha, usuarioId: user.id, recursoIds })
     });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "Error creando gasto");
-    }
-    showMessage("Gasto creado");
-    document.getElementById("formGasto").reset();
-	modal.style.display = "none";
-	await refreshAll();
-    await refreshAll();
-    // switch to gastos list
-    document.querySelector('.sidebar li[data-section="gastos"]').click();
+    if (!res.ok) throw new Error("Error creando tarea");
+    showMessage("Tarea creada");
+    document.getElementById("formTarea").reset();
+    closeModal(modalTarea);
+    await fetchTareasCreadas();
   } catch (e) {
     console.error(e);
-    showMessage("Error creando gasto");
+    showMessage("Error creando tarea");
   }
 });
 
-/* Add ingreso */
-document.getElementById("formIngreso").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const descripcion = document.getElementById("ingresoDescripcion").value.trim();
-  const monto = parseFloat(document.getElementById("ingresoMonto").value);
-  const fecha = document.getElementById("ingresoFecha").value;
-  const categoriaId = document.getElementById("ingresoCategoria").value || null;
-
-  if (!monto || !fecha) { showMessage("Completá monto y fecha"); return; }
-
-  try {
-    const res = await fetch(`${API}/ingresos`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({
-        descripcion,
-        monto,
-        fecha,
-        usuarioId: user.id,
-        categoriaId: categoriaId ? Number(categoriaId) : null
-      })
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "Error creando ingreso");
-    }
-    showMessage("Ingreso creado");
-    document.getElementById("formIngreso").reset();
-	modalIngreso.style.display = "none";
-	await refreshAll();
-    await fetchIngresos();
-    document.querySelector('.sidebar li[data-section="ingresos"]').click();
-  } catch (e) {
-    console.error(e);
-    showMessage("Error creando ingreso");
-  }
-});
-
-/* refresh all data */
+/* ==== REFRESH ALL ==== */
 async function refreshAll() {
-  await fetchCategorias();
-  await fetchGastos();
-  await fetchIngresos();
-  const gastos = await fetchGastos();
-  const ingresos = await fetchIngresos();
-  updateBalance(gastos, ingresos);
+  const recursos = await fetchRecursos();
+  const creadas = await fetchTareasCreadas();
+  const enProceso = await fetchTareasEnProceso();
+  const terminadas = await fetchTareasTerminadas();
+  updateOverview(creadas, enProceso, terminadas);
 }
 
-/* initial load */
+/* ==== INITIAL LOAD ==== */
 (async function init() {
-  // set today as default for new gasto
-  document.getElementById("gastoFecha").value = new Date().toISOString().slice(0,10);
+  document.getElementById("tareaFecha").value = new Date().toISOString().slice(0, 10);
   await fetchUserInfo();
   await refreshAll();
 })();
 
-const modal = document.getElementById('modalGasto');
-const btnAgregar = document.querySelector('[data-section="nuevo"]');
-const btnCerrar = document.getElementById('closeModal');
+/* ==== MODAL MANAGEMENT ==== */
+const modalTarea = document.getElementById('modalTarea');
+const modalRecursos = document.getElementById('modalRecursos');
 
-btnAgregar.addEventListener('click', () => {
-  modal.style.display = 'flex';
-});
+const openModalBtns = {
+  tarea: document.querySelector('[data-section="nueva-tarea"]'),
+  recursos: document.querySelector('[data-section="recursos"]')
+};
 
-btnCerrar.addEventListener('click', () => {
-  modal.style.display = 'none';
-});
+const closeModalBtns = {
+  tarea: document.getElementById('closeTarea'),
+  recursos: document.getElementById('closeRecursos')
+};
 
-// Opcional: cerrar al hacer clic fuera del contenido
+function openModal(modal) { modal.style.display = 'flex'; }
+function closeModal(modal) { modal.style.display = 'none'; }
+
+// abrir modales
+openModalBtns.tarea.addEventListener('click', () => openModal(modalTarea));
+openModalBtns.recursos.addEventListener('click', () => openModal(modalRecursos));
+
+// cerrar modales
+closeModalBtns.tarea.addEventListener('click', () => closeModal(modalTarea));
+closeModalBtns.recursos.addEventListener('click', () => closeModal(modalRecursos));
+
+// cerrar clic fuera del modal
 window.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    modal.style.display = 'none';
-  }
+  if (e.target === modalTarea) closeModal(modalTarea);
+  if (e.target === modalRecursos) closeModal(modalRecursos);
 });
 
-const modalCategorias = document.getElementById('modalCategorias');
-const btnCategorias = document.querySelector('[data-section="categorias"]');
-const btnCerrarCategorias = document.getElementById('closeCategorias');
-
-btnCategorias.addEventListener('click', () => {
-  modalCategorias.style.display = 'flex';
-});
-
-btnCerrarCategorias.addEventListener('click', () => {
-  modalCategorias.style.display = 'none';
-});
-
-window.addEventListener('click', (e) => {
-  if (e.target === modalCategorias) {
-    modalCategorias.style.display = 'none';
-  }
-});
-
-
-const modalIngreso = document.getElementById('modalIngreso');
-const btnNuevoIngreso = document.querySelector('[data-section="nuevo-ingreso"]');
-const btnCerrarIngreso = document.getElementById('closeIngreso');
-
-btnNuevoIngreso.addEventListener('click', () => {
-  modalIngreso.style.display = 'flex';
-});
-
-btnCerrarIngreso.addEventListener('click', () => {
-  modalIngreso.style.display = 'none';
-});
-
-window.addEventListener('click', (e) => {
-  if (e.target === modalIngreso) {
-    modalIngreso.style.display = 'none';
-  }
-});
-
-function updateBalance(gastos, ingresos) {
-  const totalGastos = gastos.reduce((s, g) => s + Number(g.monto || 0), 0);
-  const totalIngresos = ingresos.reduce((s, i) => s + Number(i.monto || 0), 0);
-  const balance = totalIngresos - totalGastos;
-
-  const el = document.getElementById("balanceTotal");
-  el.textContent = `$${balance.toFixed(2)}`;
-  el.classList.remove("positivo", "negativo");
-
-  if (balance >= 0) {
-    el.classList.add("positivo");
-  } else {
-    el.classList.add("negativo");
-  }
+/* ==== UPDATE OVERVIEW ==== */
+function updateOverview(creadas, enProceso, terminadas) {
+  document.getElementById("countCreadas").textContent = creadas.length;
+  document.getElementById("countEnProceso").textContent = enProceso.length;
+  document.getElementById("countTerminadas").textContent = terminadas.length;
 }
-
-
-

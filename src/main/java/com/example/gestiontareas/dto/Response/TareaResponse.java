@@ -1,58 +1,57 @@
-package com.example.gestiongastos.dto.Response;
+package com.example.gestiontareas.dto.Response;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
-public class GastoResponse {
+public class TareaResponse {
     private Long id;
+    private String titulo;
     private String descripcion;
-    private BigDecimal monto;
-    private LocalDate fecha;
+    private String fecha;   // ahora es String, igual que en la entidad Tarea
     private Long usuarioId;
-    private Long categoriaId;
-    private String categoriaNombre;
+
+    // Recursos asociados a la tarea
+    private List<RecursoResponse> recursos;
+
     // getters y setters
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getDescripcion() {
-		return descripcion;
-	}
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-	public BigDecimal getMonto() {
-		return monto;
-	}
-	public void setMonto(BigDecimal monto) {
-		this.monto = monto;
-	}
-	public LocalDate getFecha() {
-		return fecha;
-	}
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
-	public Long getUsuarioId() {
-		return usuarioId;
-	}
-	public void setUsuarioId(Long usuarioId) {
-		this.usuarioId = usuarioId;
-	}
-	public Long getCategoriaId() {
-		return categoriaId;
-	}
-	public void setCategoriaId(Long categoriaId) {
-		this.categoriaId = categoriaId;
-	}
-	public String getCategoriaNombre() {
-		return categoriaNombre;
-	}
-	public void setCategoriaNombre(String categoriaNombre) {
-		this.categoriaNombre = categoriaNombre;
-	}
-    
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public List<RecursoResponse> getRecursos() {
+        return recursos;
+    }
+    public void setRecursos(List<RecursoResponse> recursos) {
+        this.recursos = recursos;
+    }
 }

@@ -1,13 +1,13 @@
-package com.example.gestiongastos;
+package com.example.gestiontareas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GestiongastosApplication {
+public class GestiontareasApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GestiongastosApplication.class, args);
+		SpringApplication.run(GestiontareasApplication.class, args);
 	}
 
 }

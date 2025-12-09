@@ -1,8 +1,8 @@
-package com.example.gestiongastos.repository;
+package com.example.gestiontareas.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.gestiongastos.model.Categoria;
+import com.example.gestiontareas.model.Recurso;
 
-public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+public interface RecursoRepository extends JpaRepository<Recurso, Long> {
 }

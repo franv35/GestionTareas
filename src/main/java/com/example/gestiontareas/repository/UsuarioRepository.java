@@ -1,8 +1,8 @@
-package com.example.gestiongastos.repository;
+package com.example.gestiontareas.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.gestiongastos.model.Usuario;
+import com.example.gestiontareas.model.Usuario;
 
 import java.util.Optional;
 

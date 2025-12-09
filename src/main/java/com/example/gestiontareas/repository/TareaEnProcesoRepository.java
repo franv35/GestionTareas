@@ -1,11 +1,12 @@
-package com.example.gestiongastos.repository;
+package com.example.gestiontareas.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.gestiongastos.model.Ingreso;
-import com.example.gestiongastos.model.Usuario;
+
+import com.example.gestiontareas.model.TareaEnProceso;
+import com.example.gestiontareas.model.Usuario;
 
 import java.util.List;
 
-public interface IngresoRepository extends JpaRepository<Ingreso, Long> {
-    List<Ingreso> findByUsuarioOrderByFechaDesc(Usuario usuario);
+public interface TareaEnProcesoRepository extends JpaRepository<TareaEnProceso, Long> {
+    List<TareaEnProceso> findByUsuarioOrderByFechaDesc(Usuario usuario);
 }

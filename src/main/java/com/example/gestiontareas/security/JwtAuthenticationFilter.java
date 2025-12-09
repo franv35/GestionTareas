@@ -1,4 +1,4 @@
-package com.example.gestiongastos.security;
+package com.example.gestiontareas.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -6,8 +6,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.gestiongastos.model.Usuario;
-import com.example.gestiongastos.repository.UsuarioRepository;
+import com.example.gestiontareas.model.Usuario;
+import com.example.gestiontareas.repository.UsuarioRepository;
 
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;

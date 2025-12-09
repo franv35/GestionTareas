@@ -1,4 +1,4 @@
-package com.example.gestiongastos.controller;
+package com.example.gestiontareas.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.gestiongastos.dto.Request.UsuarioLoginRequest;
-import com.example.gestiongastos.dto.Request.UsuarioRegisterRequestDto;
-import com.example.gestiongastos.dto.Response.UsuarioResponse;
-import com.example.gestiongastos.model.Usuario;
-import com.example.gestiongastos.security.JwtUtil;
-import com.example.gestiongastos.services.UsuarioService;
+import com.example.gestiontareas.dto.Request.UsuarioLoginRequest;
+import com.example.gestiontareas.dto.Request.UsuarioRegisterRequestDto;
+import com.example.gestiontareas.dto.Response.UsuarioResponse;
+import com.example.gestiontareas.model.Usuario;
+import com.example.gestiontareas.security.JwtUtil;
+import com.example.gestiontareas.services.UsuarioService;
 
 import jakarta.validation.Valid;
 

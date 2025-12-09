@@ -1,13 +1,15 @@
-package com.example.gestiongastos.Mapper;
+package com.example.gestiontareas.Mapper;
 
-import com.example.gestiongastos.dto.Response.CategoriaResponse;
-import com.example.gestiongastos.dto.Response.GastoResponse;
-import com.example.gestiongastos.dto.Response.IngresoResponse;
-import com.example.gestiongastos.dto.Response.UsuarioResponse;
-import com.example.gestiongastos.model.Categoria;
-import com.example.gestiongastos.model.Gasto;
-import com.example.gestiongastos.model.Ingreso;
-import com.example.gestiongastos.model.Usuario;
+import java.util.stream.Collectors;
+
+import com.example.gestiontareas.dto.Response.RecursoResponse;
+import com.example.gestiontareas.dto.Response.TareaResponse;
+import com.example.gestiontareas.dto.Response.UsuarioResponse;
+import com.example.gestiontareas.model.Recurso;
+import com.example.gestiontareas.model.TareaCreada;
+import com.example.gestiontareas.model.TareaEnProceso;
+import com.example.gestiontareas.model.TareaTerminada;
+import com.example.gestiontareas.model.Usuario;
 
 public class AppMapper {
 
@@ -20,40 +22,63 @@ public class AppMapper {
         return r;
     }
 
-    public static CategoriaResponse toCategoriaResponse(Categoria c) {
-        if (c == null) return null;
-        CategoriaResponse r = new CategoriaResponse();
-        r.setId(c.getId());
-        r.setNombre(c.getNombre());
+    public static RecursoResponse toRecursoResponse(Recurso recurso) {
+        if (recurso == null) return null;
+        RecursoResponse r = new RecursoResponse();
+        r.setId(recurso.getId());
+        r.setNombre(recurso.getNombre());
+        r.setCantidad(recurso.getCantidad());
+        r.setUnidadMedida(recurso.getUnidadMedida());
         return r;
     }
 
-    public static GastoResponse toGastoResponse(Gasto g) {
-        if (g == null) return null;
-        GastoResponse r = new GastoResponse();
-        r.setId(g.getId());
-        r.setDescripcion(g.getDescripcion());
-        r.setMonto(g.getMonto());
-        r.setFecha(g.getFecha());
-        if (g.getUsuario() != null) r.setUsuarioId(g.getUsuario().getId());
-        if (g.getCategoria() != null) {
-            r.setCategoriaId(g.getCategoria().getId());
-            r.setCategoriaNombre(g.getCategoria().getNombre());
+    public static TareaResponse toTareaResponse(TareaCreada tarea) {
+        if (tarea == null) return null;
+        TareaResponse r = new TareaResponse();
+        r.setId(tarea.getId());
+        r.setTitulo(tarea.getTitulo());
+        r.setDescripcion(tarea.getDescripcion());
+        r.setFecha(tarea.getFecha());
+        if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
+        if (tarea.getRecursos() != null) {
+            r.setRecursos(tarea.getRecursos()
+                .stream()
+                .map(AppMapper::toRecursoResponse)
+                .collect(Collectors.toList()));
         }
         return r;
     }
 
-    public static IngresoResponse toIngresoResponse(Ingreso i) {
-        if (i == null) return null;
-        IngresoResponse r = new IngresoResponse();
-        r.setId(i.getId());
-        r.setDescripcion(i.getDescripcion());
-        r.setMonto(i.getMonto());
-        r.setFecha(i.getFecha());
-        if (i.getUsuario() != null) r.setUsuarioId(i.getUsuario().getId());
-        if (i.getCategoria() != null) {
-            r.setCategoriaId(i.getCategoria().getId());
-            r.setCategoriaNombre(i.getCategoria().getNombre());
+    public static TareaResponse toTareaResponse(TareaEnProceso tarea) {
+        if (tarea == null) return null;
+        TareaResponse r = new TareaResponse();
+        r.setId(tarea.getId());
+        r.setTitulo(tarea.getTitulo());
+        r.setDescripcion(tarea.getDescripcion());
+        r.setFecha(tarea.getFecha());
+        if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
+        if (tarea.getRecursos() != null) {
+            r.setRecursos(tarea.getRecursos()
+                .stream()
+                .map(AppMapper::toRecursoResponse)
+                .collect(Collectors.toList()));
+        }
+        return r;
+    }
+
+    public static TareaResponse toTareaResponse(TareaTerminada tarea) {
+        if (tarea == null) return null;
+        TareaResponse r = new TareaResponse();
+        r.setId(tarea.getId());
+        r.setTitulo(tarea.getTitulo());
+        r.setDescripcion(tarea.getDescripcion());
+        r.setFecha(tarea.getFecha());
+        if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
+        if (tarea.getRecursos() != null) {
+            r.setRecursos(tarea.getRecursos()
+                .stream()
+                .map(AppMapper::toRecursoResponse)
+                .collect(Collectors.toList()));
         }
         return r;
     }

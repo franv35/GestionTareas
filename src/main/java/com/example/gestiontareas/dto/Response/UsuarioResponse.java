@@ -1,4 +1,4 @@
-package com.example.gestiongastos.dto.Response;
+package com.example.gestiontareas.dto.Response;
 
 public class UsuarioResponse {
 	 	

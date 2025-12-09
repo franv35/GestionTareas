@@ -1,12 +1,12 @@
-package com.example.gestiongastos.services;
+package com.example.gestiontareas.services;
 
 import java.util.List;
 
-import com.example.gestiongastos.dto.Request.CategoriaRequest;
-import com.example.gestiongastos.dto.Response.CategoriaResponse;
+import com.example.gestiontareas.dto.Request.RecursoRequest;
+import com.example.gestiontareas.dto.Response.RecursoResponse;
 
-public interface CategoriaService {
-    CategoriaResponse create(CategoriaRequest request);
-    List<CategoriaResponse> listAll();
-    CategoriaResponse getById(Long id);
+public interface RecursoService {
+    RecursoResponse create(RecursoRequest request);
+    List<RecursoResponse> listAll();
+    RecursoResponse getById(Long id);
 }

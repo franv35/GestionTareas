@@ -1,18 +1,18 @@
-package com.example.gestiongastos.service.imp;
+package com.example.gestiontareas.service.imp;
 
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.gestiongastos.Mapper.AppMapper;
-import com.example.gestiongastos.dto.Request.UsuarioLoginRequest;
-import com.example.gestiongastos.dto.Request.UsuarioRegisterRequestDto;
-import com.example.gestiongastos.dto.Response.UsuarioResponse;
-import com.example.gestiongastos.model.Usuario;
-import com.example.gestiongastos.repository.UsuarioRepository;
-import com.example.gestiongastos.security.JwtUtil;
-import com.example.gestiongastos.services.UsuarioService;
+import com.example.gestiontareas.Mapper.AppMapper;
+import com.example.gestiontareas.dto.Request.UsuarioLoginRequest;
+import com.example.gestiontareas.dto.Request.UsuarioRegisterRequestDto;
+import com.example.gestiontareas.dto.Response.UsuarioResponse;
+import com.example.gestiontareas.model.Usuario;
+import com.example.gestiontareas.repository.UsuarioRepository;
+import com.example.gestiontareas.security.JwtUtil;
+import com.example.gestiontareas.services.UsuarioService;
 
 import jakarta.transaction.Transactional;
 

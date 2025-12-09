@@ -1,9 +1,9 @@
-package com.example.gestiongastos.services;
+package com.example.gestiontareas.services;
 
-import com.example.gestiongastos.dto.Request.UsuarioLoginRequest;
-import com.example.gestiongastos.dto.Request.UsuarioRegisterRequestDto;
-import com.example.gestiongastos.dto.Response.UsuarioResponse;
-import com.example.gestiongastos.model.Usuario;
+import com.example.gestiontareas.dto.Request.UsuarioLoginRequest;
+import com.example.gestiontareas.dto.Request.UsuarioRegisterRequestDto;
+import com.example.gestiontareas.dto.Response.UsuarioResponse;
+import com.example.gestiontareas.model.Usuario;
 
 public interface UsuarioService {
 

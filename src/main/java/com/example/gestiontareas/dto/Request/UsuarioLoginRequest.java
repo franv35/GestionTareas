@@ -1,4 +1,4 @@
-package com.example.gestiongastos.dto.Request;
+package com.example.gestiontareas.dto.Request;
 
 import jakarta.validation.constraints.NotBlank;
 

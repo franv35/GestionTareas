@@ -1,45 +1,50 @@
-package com.example.gestiongastos.service.imp;
+package com.example.gestiontareas.service.imp;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.gestiongastos.Mapper.AppMapper;
-import com.example.gestiongastos.dto.Request.CategoriaRequest;
-import com.example.gestiongastos.dto.Response.CategoriaResponse;
-import com.example.gestiongastos.model.Categoria;
-import com.example.gestiongastos.repository.CategoriaRepository;
-import com.example.gestiongastos.services.CategoriaService;
+import com.example.gestiontareas.Mapper.AppMapper;
+import com.example.gestiontareas.dto.Request.RecursoRequest;
+import com.example.gestiontareas.dto.Response.RecursoResponse;
+import com.example.gestiontareas.model.Recurso;
+import com.example.gestiontareas.repository.RecursoRepository;
+import com.example.gestiontareas.services.RecursoService;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class CategoriaServiceImp implements CategoriaService {
-	private final CategoriaRepository categoriaRepository;
+public class RecursoServiceImp implements RecursoService {
 
-    public CategoriaServiceImp(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
+    private final RecursoRepository recursoRepository;
+
+    public RecursoServiceImp(RecursoRepository recursoRepository) {
+        this.recursoRepository = recursoRepository;
     }
 
-    public CategoriaResponse create(CategoriaRequest request) {
-        Categoria c = new Categoria();
-        c.setNombre(request.getNombre());
-        Categoria saved = categoriaRepository.save(c);
-        return AppMapper.toCategoriaResponse(saved);
+    @Override
+    public RecursoResponse create(RecursoRequest request) {
+        Recurso recurso = new Recurso();
+        recurso.setNombre(request.getNombre());
+        recurso.setCantidad(request.getCantidad());
+        recurso.setUnidadMedida(request.getUnidadMedida());
+        Recurso saved = recursoRepository.save(recurso);
+        return AppMapper.toRecursoResponse(saved);
     }
 
-    public List<CategoriaResponse> listAll() {
-        return categoriaRepository.findAll().stream()
-                .map(AppMapper::toCategoriaResponse)
+    @Override
+    public List<RecursoResponse> listAll() {
+        return recursoRepository.findAll().stream()
+                .map(AppMapper::toRecursoResponse)
                 .collect(Collectors.toList());
     }
 
-    public CategoriaResponse getById(Long id) {
-        return categoriaRepository.findById(id)
-                .map(AppMapper::toCategoriaResponse)
-                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada"));
+    @Override
+    public RecursoResponse getById(Long id) {
+        return recursoRepository.findById(id)
+                .map(AppMapper::toRecursoResponse)
+                .orElseThrow(() -> new IllegalArgumentException("Recurso no encontrado"));
     }
-
 }
