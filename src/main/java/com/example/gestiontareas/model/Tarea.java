@@ -4,48 +4,74 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Tarea {
+public class Tarea {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // importante: IDENTITY no funciona bien con TABLE_PER_CLASS
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String titulo;
-
     private String descripcion;
 
-    @Column(nullable = false)
-    private String fecha; // ISO string (yyyy-MM-dd)
+    @Enumerated(EnumType.STRING)
+    private EstadoTarea estado;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "proyecto_id")
+    private Proyecto proyecto;
 
-    @ManyToMany
-    @JoinTable(
-        name = "tarea_recursos",
-        joinColumns = @JoinColumn(name = "tarea_id"),
-        inverseJoinColumns = @JoinColumn(name = "recurso_id")
-    )
+    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL)
     private List<Recurso> recursos;
+    
+    
+    //Getters y Setters
 
-    // Getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+	public Long getId() {
+		return id;
+	}
 
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+	public String getTitulo() {
+		return titulo;
+	}
 
-    public String getFecha() { return fecha; }
-    public void setFecha(String fecha) { this.fecha = fecha; }
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public List<Recurso> getRecursos() { return recursos; }
-    public void setRecursos(List<Recurso> recursos) { this.recursos = recursos; }
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public EstadoTarea getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoTarea estado) {
+		this.estado = estado;
+	}
+
+	public Proyecto getProyecto() {
+		return proyecto;
+	}
+
+	public void setProyecto(Proyecto proyecto) {
+		this.proyecto = proyecto;
+	}
+
+	public List<Recurso> getRecursos() {
+		return recursos;
+	}
+
+	public void setRecursos(List<Recurso> recursos) {
+		this.recursos = recursos;
+	}
+    
 }
+

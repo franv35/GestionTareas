@@ -1,71 +1,41 @@
 package com.example.gestiontareas.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.gestiontareas.dto.Request.UsuarioLoginRequest;
-import com.example.gestiontareas.dto.Request.UsuarioRegisterRequestDto;
+import com.example.gestiontareas.dto.Request.UsuarioRegisterRequest;
 import com.example.gestiontareas.dto.Response.UsuarioResponse;
-import com.example.gestiontareas.model.Usuario;
-import com.example.gestiontareas.security.JwtUtil;
+import com.example.gestiontareas.model.Proyecto;
 import com.example.gestiontareas.services.UsuarioService;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
-	
-	
-	
-	private final JwtUtil jwtUtil;
-	
-	
-	private final  UsuarioService usuarioService;
-    public UsuarioController(UsuarioService usuarioService, JwtUtil jwtUtil) {
-        this.usuarioService = usuarioService;
-        this.jwtUtil = jwtUtil;
-    }
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @PostMapping("/register")
-    public ResponseEntity<UsuarioResponse> register(@Valid @RequestBody UsuarioRegisterRequestDto req) {
-        UsuarioResponse res = usuarioService.register(req);
-        return ResponseEntity.ok(res);
+    public ResponseEntity<UsuarioResponse> registrar(
+            @RequestBody UsuarioRegisterRequest request) {
+
+        return ResponseEntity.ok(usuarioService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponse> login(@Valid @RequestBody UsuarioLoginRequest req) {
-        UsuarioResponse res = usuarioService.login(req);
-        return ResponseEntity.ok(res);
+    public ResponseEntity<UsuarioResponse> login(
+            @RequestBody UsuarioLoginRequest request) {
+
+        return ResponseEntity.ok(usuarioService.login(request));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.findById(id));
+    @GetMapping("/{id}/proyectos")
+    public ResponseEntity<List<Proyecto>> obtenerProyectos(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.obtenerProyectos(id));
     }
-    
-    @GetMapping("/me")
-    public ResponseEntity<UsuarioResponse> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String email = jwtUtil.extractEmail(token);
-
-        Usuario usuario = usuarioService.findByEmail(email); // ✅ usamos el service
-
-        UsuarioResponse response = new UsuarioResponse();
-        response.setId(usuario.getId());
-        response.setNombre(usuario.getNombre());
-        response.setEmail(usuario.getEmail());
-        response.setToken(token);
-
-        return ResponseEntity.ok(response);
-    }
-
-
-
 }

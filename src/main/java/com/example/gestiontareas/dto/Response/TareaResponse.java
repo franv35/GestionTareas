@@ -1,21 +1,24 @@
 package com.example.gestiontareas.dto.Response;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import com.example.gestiontareas.model.EstadoTarea;
+
 public class TareaResponse {
+
     private Long id;
     private String titulo;
     private String descripcion;
-    private String fecha;   // ahora es String, igual que en la entidad Tarea
-    private Long usuarioId;
-
-    // Recursos asociados a la tarea
+    private LocalDate fecha;
+    private EstadoTarea estado;
+    private Long proyectoId;
     private List<RecursoResponse> recursos;
 
-    // getters y setters
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -23,6 +26,7 @@ public class TareaResponse {
     public String getTitulo() {
         return titulo;
     }
+
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
@@ -30,27 +34,39 @@ public class TareaResponse {
     public String getDescripcion() {
         return descripcion;
     }
+
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
-    public String getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
-    public void setFecha(String fecha) {
+
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
-    public Long getUsuarioId() {
-        return usuarioId;
+    public EstadoTarea getEstado() {
+        return estado;
     }
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
+
+    public void setEstado(EstadoTarea estado) {
+        this.estado = estado;
+    }
+
+    public Long getProyectoId() {
+        return proyectoId;
+    }
+
+    public void setProyectoId(Long proyectoId) {
+        this.proyectoId = proyectoId;
     }
 
     public List<RecursoResponse> getRecursos() {
         return recursos;
     }
+
     public void setRecursos(List<RecursoResponse> recursos) {
         this.recursos = recursos;
     }

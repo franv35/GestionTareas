@@ -16,35 +16,38 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class RecursoServiceImp implements RecursoService {
+public class RecursoServiceImpl implements RecursoService {
 
     private final RecursoRepository recursoRepository;
 
-    public RecursoServiceImp(RecursoRepository recursoRepository) {
+    public RecursoServiceImpl(RecursoRepository recursoRepository) {
         this.recursoRepository = recursoRepository;
     }
 
     @Override
-    public RecursoResponse create(RecursoRequest request) {
+    public RecursoResponse create(RecursoRequest req) {
         Recurso recurso = new Recurso();
-        recurso.setNombre(request.getNombre());
-        recurso.setCantidad(request.getCantidad());
-        recurso.setUnidadMedida(request.getUnidadMedida());
+        recurso.setNombre(req.getNombre());
+        recurso.setCantidad(req.getCantidad());
+        recurso.setUnidad(req.getUnidad());
+
         Recurso saved = recursoRepository.save(recurso);
         return AppMapper.toRecursoResponse(saved);
     }
 
     @Override
     public List<RecursoResponse> listAll() {
-        return recursoRepository.findAll().stream()
+        return recursoRepository.findAll()
+                .stream()
                 .map(AppMapper::toRecursoResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public RecursoResponse getById(Long id) {
-        return recursoRepository.findById(id)
-                .map(AppMapper::toRecursoResponse)
+        Recurso recurso = recursoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Recurso no encontrado"));
+
+        return AppMapper.toRecursoResponse(recurso);
     }
 }

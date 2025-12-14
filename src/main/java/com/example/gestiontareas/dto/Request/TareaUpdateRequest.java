@@ -4,13 +4,12 @@ import com.example.gestiontareas.model.EstadoTarea;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TareaRequest {
+public class TareaUpdateRequest {
 
     private String titulo;
     private String descripcion;
     private LocalDate fecha;
     private EstadoTarea estado;
-    private Long proyectoId;
     private List<RecursoRequest> recursos;
 
     public String getTitulo() {
@@ -43,14 +42,6 @@ public class TareaRequest {
 
     public void setEstado(EstadoTarea estado) {
         this.estado = estado;
-    }
-
-    public Long getProyectoId() {
-        return proyectoId;
-    }
-    
-    public void setProyectoId(Long proyectoId) {
-        this.proyectoId = proyectoId;
     }
 
     public List<RecursoRequest> getRecursos() {

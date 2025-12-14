@@ -4,10 +4,9 @@ public class RecursoResponse {
 
     private Long id;
     private String nombre;
-    private Double cantidad;
+    private int cantidad;
     private String unidadMedida;
 
-    // getters y setters
     public Long getId() {
         return id;
     }
@@ -24,19 +23,19 @@ public class RecursoResponse {
         this.nombre = nombre;
     }
 
-    public Double getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(Double cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
-    public String getUnidadMedida() {
+    public String getUnidad() {
         return unidadMedida;
     }
 
-    public void setUnidadMedida(String unidadMedida) {
+    public void setUnidad(String unidadMedida) {
         this.unidadMedida = unidadMedida;
     }
 }

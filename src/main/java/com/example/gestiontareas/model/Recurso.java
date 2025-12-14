@@ -4,58 +4,60 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "recursos")
 public class Recurso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
 
-
-    // Nombre del recurso (ej: Harina, Silla, Persona)
-    @Column(nullable = false)
     private String nombre;
+    private int cantidad;
+    private String unidad; // ej: "kg", "lts", "unidades"
 
-    // Cantidad asignada (ej: 20, 5, 3)
-    @Column(nullable = false)
-    private Double cantidad;
+    @ManyToOne
+    @JoinColumn(name = "tarea_id")
+    private Tarea tarea;
+    
+    //Getters y Setters
 
-    // Unidad de medida (ej: kg, unidades, personas)
-    @Column(nullable = false)
-    private String unidadMedida;
+	public Long getId() {
+		return id;
+	}
 
-    // Relación inversa con tareas (ManyToMany)
-    @ManyToMany(mappedBy = "recursos")
-    private List<TareaCreada> tareasCreadas;
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @ManyToMany(mappedBy = "recursos")
-    private List<TareaEnProceso> tareasEnProceso;
+	public String getNombre() {
+		return nombre;
+	}
 
-    @ManyToMany(mappedBy = "recursos")
-    private List<TareaTerminada> tareasTerminadas;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    // getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+	public Tarea getTarea() {
+		return tarea;
+	}
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+	public void setTarea(Tarea tarea) {
+		this.tarea = tarea;
+	}
 
-    public Double getCantidad() { return cantidad; }
-    public void setCantidad(Double cantidad) { this.cantidad = cantidad; }
+	public int getCantidad() {
+		return cantidad;
+	}
 
-    public String getUnidadMedida() { return unidadMedida; }
-    public void setUnidadMedida(String unidadMedida) { this.unidadMedida = unidadMedida; }
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
 
-    public List<TareaCreada> getTareasCreadas() { return tareasCreadas; }
-    public void setTareasCreadas(List<TareaCreada> tareasCreadas) { this.tareasCreadas = tareasCreadas; }
+	public String getUnidad() {
+		return unidad;
+	}
 
-    public List<TareaEnProceso> getTareasEnProceso() { return tareasEnProceso; }
-    public void setTareasEnProceso(List<TareaEnProceso> tareasEnProceso) { this.tareasEnProceso = tareasEnProceso; }
-
-    public List<TareaTerminada> getTareasTerminadas() { return tareasTerminadas; }
-    public void setTareasTerminadas(List<TareaTerminada> tareasTerminadas) { this.tareasTerminadas = tareasTerminadas; }
+	public void setUnidad(String unidad) {
+		this.unidad = unidad;
+	}
+	
 }
+

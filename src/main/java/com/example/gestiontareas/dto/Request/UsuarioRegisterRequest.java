@@ -1,9 +1,18 @@
 package com.example.gestiontareas.dto.Request;
 
-public class UsuarioLoginRequest {
+public class UsuarioRegisterRequest {
 
+    private String nombre;
     private String email;
     private String password;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public String getEmail() {
         return email;

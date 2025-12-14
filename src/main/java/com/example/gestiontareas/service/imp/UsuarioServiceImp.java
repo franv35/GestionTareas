@@ -1,14 +1,15 @@
 package com.example.gestiontareas.service.imp;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.gestiontareas.Mapper.AppMapper;
 import com.example.gestiontareas.dto.Request.UsuarioLoginRequest;
-import com.example.gestiontareas.dto.Request.UsuarioRegisterRequestDto;
+import com.example.gestiontareas.dto.Request.UsuarioRegisterRequest;
 import com.example.gestiontareas.dto.Response.UsuarioResponse;
+import com.example.gestiontareas.model.Proyecto;
 import com.example.gestiontareas.model.Usuario;
 import com.example.gestiontareas.repository.UsuarioRepository;
 import com.example.gestiontareas.security.JwtUtil;
@@ -19,19 +20,18 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class UsuarioServiceImp implements UsuarioService {
-	
-	private final UsuarioRepository usuarioRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final JwtUtil jwtUtil; // 👈 inyectado por Spring
 
-    // 👇 constructor con inyección automática
+    private final UsuarioRepository usuarioRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtUtil jwtUtil;
+
     public UsuarioServiceImp(UsuarioRepository usuarioRepository, JwtUtil jwtUtil) {
         this.usuarioRepository = usuarioRepository;
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public UsuarioResponse register(UsuarioRegisterRequestDto req) {
+    public UsuarioResponse register(UsuarioRegisterRequest req) {
         if (usuarioRepository.existsByEmail(req.getEmail())) {
             throw new IllegalArgumentException("Email ya registrado");
         }
@@ -41,23 +41,18 @@ public class UsuarioServiceImp implements UsuarioService {
         u.setEmail(req.getEmail());
         u.setPassword(passwordEncoder.encode(req.getPassword()));
 
-        Usuario saved = usuarioRepository.save(u);
-        return AppMapper.toUsuarioResponse(saved);
+        return AppMapper.toUsuarioResponse(usuarioRepository.save(u));
     }
 
     @Override
     public UsuarioResponse login(UsuarioLoginRequest req) {
-        Optional<Usuario> opt = usuarioRepository.findByEmail(req.getEmail());
-        if (opt.isEmpty()) {
-            throw new IllegalArgumentException("Credenciales inválidas");
-        }
+        Usuario u = usuarioRepository.findByEmail(req.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
 
-        Usuario u = opt.get();
         if (!passwordEncoder.matches(req.getPassword(), u.getPassword())) {
             throw new IllegalArgumentException("Credenciales inválidas");
         }
 
-        // ✅ usamos el bean inyectado
         String token = jwtUtil.generateToken(u.getEmail());
 
         UsuarioResponse res = AppMapper.toUsuarioResponse(u);
@@ -71,10 +66,18 @@ public class UsuarioServiceImp implements UsuarioService {
                 .map(AppMapper::toUsuarioResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
     }
-   
+
     @Override
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @Override
+    public List<Proyecto> obtenerProyectos(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        return usuario.getProyectos();
     }
 }
