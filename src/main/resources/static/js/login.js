@@ -1,5 +1,5 @@
-document.getElementById("btnLogin").addEventListener("click", () => {
-   const email = document.getElementById("email").value.trim();
+document.getElementById("btnLogin").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   if (!email || !password) {
@@ -7,28 +7,32 @@ document.getElementById("btnLogin").addEventListener("click", () => {
     return;
   }
 
-  fetch("http://localhost:8080/api/usuarios/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  })
-  .then(response => {
+  try {
+    const response = await fetch("http://localhost:8080/api/usuarios/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
     if (!response.ok) {
-      throw new Error("Error en el login");
+      throw new Error("Credenciales inválidas");
     }
-    return response.json();
-  })
-  .then(data => {
-    console.log("Login exitoso:", data);
-    // Guarda el token en localStorage
+
+    const data = await response.json();
+
+    // 🔐 Guardamos token
     localStorage.setItem("token", data.token);
-     //Redirige al usuario al dashboard o página principal
-    window.location.href = "dashboard.html"; // 👈 o la ruta que uses
-  })
-  .catch(error => {
-    console.error("Error:", error);
-    alert("Credenciales inválidas o error de conexión.");
-  });
+    localStorage.setItem("usuarioId", data.id);
+	localStorage.setItem("usuarioEmail", data.email);
+    localStorage.setItem("usuarioNombre", data.nombre);
+
+    // ✅ Redirección correcta según tu flujo
+    window.location.href = "proyectos.html";
+
+  } catch (error) {
+    alert("Error al iniciar sesión");
+    console.error(error);
+  }
 });

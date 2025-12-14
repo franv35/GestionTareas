@@ -12,6 +12,8 @@ import com.example.gestiontareas.dto.Response.UsuarioResponse;
 import com.example.gestiontareas.model.Proyecto;
 import com.example.gestiontareas.services.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*")
@@ -29,10 +31,12 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioResponse> login(
-            @RequestBody UsuarioLoginRequest request) {
+            @RequestBody @Valid UsuarioLoginRequest req) {
 
-        return ResponseEntity.ok(usuarioService.login(request));
+        UsuarioResponse response = usuarioService.login(req);
+        return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/{id}/proyectos")
     public ResponseEntity<List<Proyecto>> obtenerProyectos(@PathVariable Long id) {

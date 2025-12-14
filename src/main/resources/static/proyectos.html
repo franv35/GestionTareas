@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proyectos</title>
+  <link rel="stylesheet" href="./css/stylesmica.css" />
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>📋 Proyectos</h1>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-item active" id="navProyectos">📊 Proyectos</li>
+      <li class="nav-item" id="navRecursos">🔧 Recursos</li>
+      <li class="nav-item" id="btnAbrirProyecto">➕ Crear Proyecto</li>
+      <li class="nav-item" id="btnAbrirRecurso">➕ Crear Recurso</li>
+      <li class="nav-item logout" id="logoutBtn">🚪 Cerrar sesión</li>
+    </ul>
+
+    <footer class="sidebar-footer">
+      <small id="userInfo"></small>
+    </footer>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <h2 id="topbarTitle">Gestión de Proyectos</h2>
+    </div>
+
+    <section class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Proyectos</div>
+          <div class="stat-value" id="statProyectos">0</div>
+        </div>
+
+        <div class="stat-card stat-card-primario">
+          <div class="stat-label">Tareas en proceso</div>
+          <div class="stat-value" id="statProceso">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Tareas completadas</div>
+          <div class="stat-value stat-value-verde" id="statCompletadas">0</div>
+        </div>
+      </div>
+
+      <!-- GRID PROYECTOS -->
+      <div class="proyectos-grid" id="proyectosGrid"></div>
+
+    </section>
+  </main>
+</div>
+
+<!-- MODAL PROYECTO -->
+<div id="modalProyecto" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" id="cerrarProyecto">&times;</span>
+    <h3>Crear Proyecto</h3>
+
+    <form id="formProyecto" class="form">
+      <input id="proyectoNombre" placeholder="Nombre" required />
+      <textarea id="proyectoDescripcion" placeholder="Descripción"></textarea>
+      <input type="date" id="proyectoFecha" required />
+      <button class="btn">Crear</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL RECURSO -->
+<div id="modalRecurso" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" id="cerrarRecurso">&times;</span>
+    <h3>Crear Recurso</h3>
+
+    <form id="formRecurso" class="form">
+      <input id="recursoNombre" placeholder="Nombre" required />
+      <input type="number" id="recursoCantidad" placeholder="Cantidad" required />
+      <input id="recursoUnidad" placeholder="Unidad" required />
+      <button class="btn">Crear</button>
+    </form>
+  </div>
+</div>
+
+<script src="./js/proyectos.js"></script>
+</body>
+</html>
