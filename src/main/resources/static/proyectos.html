@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proyectos - Gestión de Tareas</title>
+  <link rel="stylesheet" href="../static/css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>📋 Proyectos</h1>
+      </div>
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item active" data-section="proyectos">📊 Proyectos</li>
+          <li class="nav-item" data-section="recursos">🔧 Recursos</li>
+          <li class="nav-item" data-section="nuevo-proyecto">➕ Crear Proyecto</li>
+          <li class="nav-item logout" id="logoutBtn">🚪 Cerrar sesión</li>
+        </ul>
+      </nav>
+      <footer class="sidebar-footer">
+        <small id="userEmail">usuario@email.com</small>
+      </footer>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <h2 id="topbarTitle">Gestión de Proyectos</h2>
+      </div>
+
+      <!-- Content -->
+      <section class="content content-proyectos">
+        <!-- Vista de Proyectos -->
+        <div id="vistaProyectos" class="vista-seccion active">
+          <!-- Estadísticas Generales -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total de Proyectos</div>
+              <div class="stat-value" id="totalProyectos">6</div>
+            </div>
+            <div class="stat-card stat-card-primario">
+              <div class="stat-label">Tareas en Proceso</div>
+              <div class="stat-value" id="tareasEnProceso">21</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tareas Completadas</div>
+              <div class="stat-value stat-value-verde" id="tareasCompletadas">61</div>
+            </div>
+          </div>
+
+          <!-- Grid de Proyectos -->
+          <div class="proyectos-grid" id="proyectosGrid">
+            <!-- Las tarjetas se generarán dinámicamente con JS -->
+          </div>
+        </div>
+
+        <!-- Vista de Recursos -->
+        <div id="vistaRecursos" class="vista-seccion">
+          <div class="section-placeholder">
+            <h3>🔧 Recursos</h3>
+            <p>Aquí puedes gestionar los recursos de tus proyectos</p>
+            <button class="btn" onclick="alert('Funcionalidad de recursos en desarrollo')">
+              Agregar Recurso
+            </button>
+          </div>
+        </div>
+
+        <!-- Vista de Nuevo Proyecto -->
+        <div id="vistaNuevoProyecto" class="vista-seccion">
+          <div class="form-container">
+            <h3>Crear Nuevo Proyecto</h3>
+            <form id="formNuevoProyecto" class="form">
+              <label>
+                Nombre del Proyecto
+                <input 
+                  type="text" 
+                  id="nombreProyecto" 
+                  placeholder="Ingresa el nombre..." 
+                  maxlength="100"
+                  required 
+                />
+              </label>
+
+              <label>
+                Descripción
+                <textarea 
+                  id="descripcionProyecto" 
+                  placeholder="Describe el proyecto..." 
+                  rows="4"
+                  maxlength="500"
+                ></textarea>
+              </label>
+
+              <label>
+                Fecha de Inicio
+                <input type="date" id="fechaInicio" required />
+              </label>
+
+              <div class="form-actions">
+                <button type="submit" class="btn">Crear Proyecto</button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast para mensajes -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../static/js/proyectos.js"></script>
+</body>
+</html>

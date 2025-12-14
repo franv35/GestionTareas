@@ -39,6 +39,8 @@ public class AppMapper {
         r.setTitulo(tarea.getTitulo());
         r.setDescripcion(tarea.getDescripcion());
         r.setFecha(tarea.getFecha());
+        r.setEstado(tarea.getEstado().name());
+
         if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
         if (tarea.getRecursos() != null) {
             r.setRecursos(tarea.getRecursos()
@@ -56,6 +58,8 @@ public class AppMapper {
         r.setTitulo(tarea.getTitulo());
         r.setDescripcion(tarea.getDescripcion());
         r.setFecha(tarea.getFecha());
+        r.setEstado(tarea.getEstado().name());
+
         if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
         if (tarea.getRecursos() != null) {
             r.setRecursos(tarea.getRecursos()
@@ -73,6 +77,8 @@ public class AppMapper {
         r.setTitulo(tarea.getTitulo());
         r.setDescripcion(tarea.getDescripcion());
         r.setFecha(tarea.getFecha());
+        r.setEstado(tarea.getEstado().name());
+
         if (tarea.getUsuario() != null) r.setUsuarioId(tarea.getUsuario().getId());
         if (tarea.getRecursos() != null) {
             r.setRecursos(tarea.getRecursos()
@@ -82,4 +88,6 @@ public class AppMapper {
         }
         return r;
     }
+    
+    
 }

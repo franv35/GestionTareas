@@ -8,6 +8,8 @@ public class TareaResponse {
     private String descripcion;
     private String fecha;   // ahora es String, igual que en la entidad Tarea
     private Long usuarioId;
+    private String estado;
+
 
     // Recursos asociados a la tarea
     private List<RecursoResponse> recursos;
@@ -54,4 +56,11 @@ public class TareaResponse {
     public void setRecursos(List<RecursoResponse> recursos) {
         this.recursos = recursos;
     }
+    
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
 }
+
+
+

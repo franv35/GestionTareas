@@ -1,312 +1,400 @@
-const API = "http://localhost:8080/api";
-const messageEl = document.getElementById("message");
+const API = "http://localhost:8080/api"
+const messageEl = document.getElementById("message")
 
 // obtenemos el token del login
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("token")
 
 // si no hay token, redirigimos al login
 if (!token) {
-  window.location.href = "login.html";
+  window.location.href = "login.html"
 }
 
 // headers con autenticación
 function authHeaders() {
   return {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`
-  };
+    Authorization: `Bearer ${token}`,
+  }
 }
 
 // usuario logueado
-let user = null;
+let user = null
 
 // mostrar mensajes tipo toast
 function showMessage(text, time = 3000) {
-  messageEl.textContent = text;
-  messageEl.style.display = "block";
-  messageEl.style.opacity = "1";
-  setTimeout(() => { messageEl.style.opacity = "0"; }, time);
-  setTimeout(() => { messageEl.style.display = "none"; }, time + 200);
+  messageEl.textContent = text
+  messageEl.style.display = "block"
+  messageEl.style.opacity = "1"
+  setTimeout(() => {
+    messageEl.style.opacity = "0"
+  }, time)
+  setTimeout(() => {
+    messageEl.style.display = "none"
+  }, time + 200)
 }
 
 // obtener info del usuario
 async function fetchUserInfo() {
   try {
-    const res = await fetch(`${API}/usuarios/me`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudo obtener info del usuario");
-    user = await res.json();
-    document.getElementById("userEmail").textContent = user.email;
-    console.log("Usuario cargado:", user);
+    const res = await fetch(`${API}/usuarios/me`, { headers: authHeaders() })
+    if (!res.ok) throw new Error("No se pudo obtener info del usuario")
+    user = await res.json()
+    document.getElementById("userEmail").textContent = user.email
+    console.log("Usuario cargado:", user)
   } catch (e) {
-    console.error(e);
-    showMessage("Error obteniendo información del usuario");
-    window.location.href = "login.html";
+    console.error(e)
+    showMessage("Error obteniendo información del usuario")
+    window.location.href = "login.html"
   }
 }
 
 // logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-});
+  localStorage.removeItem("token")
+  window.location.href = "login.html"
+})
 
 // navegación sidebar
-document.querySelectorAll(".sidebar li[data-section]").forEach(li => {
+document.querySelectorAll(".sidebar li[data-section]").forEach((li) => {
   li.addEventListener("click", () => {
-    document.querySelectorAll(".sidebar li").forEach(n => n.classList.remove("active"));
-    li.classList.add("active");
+    document.querySelectorAll(".sidebar li").forEach((n) => n.classList.remove("active"))
+    li.classList.add("active")
 
-    const section = li.getAttribute("data-section");
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
+    const section = li.getAttribute("data-section")
+    document.querySelectorAll(".page").forEach((p) => p.classList.remove("visible"))
 
     // mostrar la página correspondiente si existe
-    const page = document.getElementById(section);
-    if (page) page.classList.add("visible");
+    const page = document.getElementById(section)
+    if (page) page.classList.add("visible")
 
     // opcional: cambiar título
-    const pageTitleEl = document.getElementById("pageTitle");
-    if (pageTitleEl) pageTitleEl.textContent = li.textContent;
+    const pageTitleEl = document.getElementById("pageTitle")
+    if (pageTitleEl) pageTitleEl.textContent = li.textContent
 
     // aquí podrías llamar fetchGastos / fetchIngresos si las agregas
-  });
-});
+  })
+})
 
 /* ==== FETCH DATA ==== */
 async function fetchRecursos() {
   try {
-    const res = await fetch(`${API}/recursos`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar los recursos");
-    const data = await res.json();
-    renderRecursos(data);
-    return data;
+    const res = await fetch(`${API}/recursos`, { headers: authHeaders() })
+    if (!res.ok) throw new Error("No se pudieron cargar los recursos")
+    const data = await res.json()
+    renderRecursos(data)
+    return data
   } catch (e) {
-    console.error(e);
-    showMessage("Error cargando recursos");
-    return [];
+    console.error(e)
+    showMessage("Error cargando recursos")
+    return []
   }
 }
 
 async function fetchTareasCreadas() {
   try {
-    const res = await fetch(`${API}/tareas-creadas/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas creadas");
-    const data = await res.json();
-    renderTareas("listaTareasCreadas", data);
-    attachDeleteHandlers("listaTareasCreadas");
-    return data;
+    const res = await fetch(`${API}/tareas-creadas/usuario/${user.id}`, { headers: authHeaders() })
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas creadas")
+    const data = await res.json()
+    renderTareas("listaTareasCreadas", data)
+    attachDeleteHandlers("listaTareasCreadas")
+    return data
   } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas creadas");
-    return [];
+    console.error(e)
+    showMessage("Error cargando tareas creadas")
+    return []
   }
 }
 
 async function fetchTareasEnProceso() {
   try {
-    const res = await fetch(`${API}/tareas-en-proceso/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas en proceso");
-    const data = await res.json();
-    renderTareas("listaTareasEnProceso", data);
-    attachDeleteHandlers("listaTareasEnProceso");
-    return data;
+    const res = await fetch(`${API}/tareas-en-proceso/usuario/${user.id}`, { headers: authHeaders() })
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas en proceso")
+    const data = await res.json()
+    renderTareas("listaTareasEnProceso", data)
+    attachDeleteHandlers("listaTareasEnProceso")
+    return data
   } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas en proceso");
-    return [];
+    console.error(e)
+    showMessage("Error cargando tareas en proceso")
+    return []
   }
 }
 
 async function fetchTareasTerminadas() {
   try {
-    const res = await fetch(`${API}/tareas-terminadas/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas terminadas");
-    const data = await res.json();
-    renderTareas("listaTareasTerminadas", data);
-    attachDeleteHandlers("listaTareasTerminadas");
-    return data;
+    const res = await fetch(`${API}/tareas-terminadas/usuario/${user.id}`, { headers: authHeaders() })
+    if (!res.ok) throw new Error("No se pudieron cargar las tareas terminadas")
+    const data = await res.json()
+    renderTareas("listaTareasTerminadas", data)
+    attachDeleteHandlers("listaTareasTerminadas")
+    return data
   } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas terminadas");
-    return [];
+    console.error(e)
+    showMessage("Error cargando tareas terminadas")
+    return []
   }
 }
 
 /* ==== RENDER ==== */
 function renderRecursos(recursos) {
-  const recursoSelect = document.getElementById("tareaRecursos");
-  recursoSelect.innerHTML = "";
-  recursos.forEach(r => {
-    const option = document.createElement("option");
-    option.value = r.id;
-    option.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`;
-    recursoSelect.appendChild(option);
-  });
+  const recursoSelect = document.getElementById("tareaRecursos")
+  recursoSelect.innerHTML = ""
+  recursos.forEach((r) => {
+    const option = document.createElement("option")
+    option.value = r.id
+    option.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`
+    recursoSelect.appendChild(option)
+  })
 
   document.getElementById("listaRecursos").innerHTML = recursos
-    .map(r => `<li>${r.nombre} — ${r.cantidad} ${r.unidadMedida}</li>`)
-    .join("");
+    .map((r) => `<li>${r.nombre} — ${r.cantidad} ${r.unidadMedida}</li>`)
+    .join("")
 }
 
 function renderTareas(listId, tareas) {
-  const ul = document.getElementById(listId);
-  ul.innerHTML = "";
-  tareas.forEach(t => {
-    const li = document.createElement("li");
-    li.classList.add("tarea-card");
+  const ul = document.getElementById(listId)
+  ul.innerHTML = ""
+
+  tareas.forEach((t) => {
+    const li = document.createElement("li")
+    li.classList.add("tarea-card")
+
+    let moveButtons = ""
+
+    // --- BOTONES SEGÚN ESTADO ---
+    if (listId === "listaTareasCreadas") {
+      moveButtons = `
+        <button class="btn-move" data-id="${t.id}" data-to="en-proceso">→</button>
+      `
+    }
+
+    if (listId === "listaTareasEnProceso") {
+      moveButtons = `
+        <button class="btn-move" data-id="${t.id}" data-to="creadas">←</button>
+        <button class="btn-move" data-id="${t.id}" data-to="terminadas">→</button>
+      `
+    }
+
+    if (listId === "listaTareasTerminadas") {
+      moveButtons = `
+        <button class="btn-move" data-id="${t.id}" data-to="en-proceso">←</button>
+      `
+    }
+
     li.innerHTML = `
       <strong>${t.titulo}</strong><br>
       <span>${t.descripcion || "-"}</span><br>
       <small>${t.fecha}</small><br>
-      <em>Recursos: ${(t.recursos && t.recursos.length > 0) 
-        ? t.recursos.map(r => r.nombre).join(", ") 
-        : "—"}</em>
+      <em>Recursos: ${t.recursos && t.recursos.length > 0 ? t.recursos.map((r) => r.nombre).join(", ") : "—"}</em>
+      
       <div class="actions">
+        ${moveButtons}
         <button class="btn-delete" data-id="${t.id}">Eliminar</button>
       </div>
-    `;
-    ul.appendChild(li);
-  });
+    `
+
+    ul.appendChild(li)
+  })
+
+  attachDeleteHandlers(listId)
+  attachMoveHandlers()
 }
 
 /* ==== DELETE HANDLER ==== */
 function attachDeleteHandlers(listId) {
-  const ul = document.getElementById(listId);
-  ul.querySelectorAll(".btn-delete").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const id = e.target.dataset.id;
-      if (!confirm("¿Eliminar tarea?")) return;
-      try {
-        let endpoint = "";
-        if (listId === "listaTareasCreadas") endpoint = "tareas-creadas";
-        if (listId === "listaTareasEnProceso") endpoint = "tareas-en-proceso";
-        if (listId === "listaTareasTerminadas") endpoint = "tareas-terminadas";
+  const list = document.getElementById(listId)
+  if (!list) return
 
+  list.querySelectorAll(".btn-delete").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.dataset.id
+      if (!confirm("¿Estás seguro de que quieres eliminar esta tarea?")) return
+
+      let endpoint = ""
+      if (listId === "listaTareasCreadas") endpoint = "tareas-creadas"
+      if (listId === "listaTareasEnProceso") endpoint = "tareas-en-proceso"
+      if (listId === "listaTareasTerminadas") endpoint = "tareas-terminadas"
+
+      try {
         const res = await fetch(`${API}/${endpoint}/${id}`, {
           method: "DELETE",
-          headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("No se pudo eliminar");
-        showMessage("Tarea eliminada");
-        await refreshAll();
+          headers: authHeaders(),
+        })
+
+        if (!res.ok) throw new Error("Error eliminando tarea")
+
+        showMessage("Tarea eliminada")
+        await refreshAll()
       } catch (err) {
-        console.error(err);
-        showMessage("Error eliminando tarea");
+        console.error(err)
+        showMessage("Error al eliminar la tarea")
       }
-    });
-  });
+    })
+  })
+}
+
+function attachMoveHandlers() {
+  document.querySelectorAll(".btn-move").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      // ANIMACIÓN
+      if (btn.innerText === "→") {
+        btn.classList.add("derecha")
+      }
+      if (btn.innerText === "←") {
+        btn.classList.add("izquierda")
+      }
+
+      // Esperar animación antes de mover tarea
+      await new Promise((res) => setTimeout(res, 250))
+
+      const id = e.target.dataset.id
+      const destino = e.target.dataset.to
+
+      let endpoint = ""
+
+      // Mover de CREADAS → EN PROCESO
+      if (destino === "en-proceso") endpoint = "tareas-creadas/mover-desde-proceso"
+
+      // Mover de EN PROCESO → CREADAS (NO IMPLEMENTADO EN BACKEND)
+      if (destino === "creadas") {
+        showMessage("Función no disponible - falta implementar en backend")
+        return
+      }
+
+      // Mover de EN PROCESO → TERMINADAS
+      if (destino === "terminadas") endpoint = "tareas-en-proceso/mover"
+
+      try {
+        const res = await fetch(`${API}/${endpoint}/${id}`, {
+          method: "PUT",
+          headers: authHeaders(),
+        })
+
+        if (!res.ok) throw new Error("Error moviendo tarea")
+
+        showMessage("Tarea movida")
+        await refreshAll()
+      } catch (err) {
+        console.error(err)
+        showMessage("Error moviendo la tarea")
+      }
+    })
+  })
 }
 
 /* ==== CREATE RESOURCE ==== */
 document.getElementById("btnCrearRecurso").addEventListener("click", async () => {
-  const nombre = document.getElementById("recursoNombre").value.trim();
-  const cantidad = parseInt(document.getElementById("recursoCantidad").value);
-  const unidadMedida = document.getElementById("recursoUnidad").value.trim();
+  const nombre = document.getElementById("recursoNombre").value.trim()
+  const cantidad = Number.parseInt(document.getElementById("recursoCantidad").value)
+  const unidadMedida = document.getElementById("recursoUnidad").value.trim()
 
-  if (!nombre || !cantidad || !unidadMedida) { 
-    showMessage("Completá todos los campos"); 
-    return; 
+  if (!nombre || !cantidad || !unidadMedida) {
+    showMessage("Completá todos los campos")
+    return
   }
 
   try {
     const res = await fetch(`${API}/recursos`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ nombre, cantidad, unidadMedida })
-    });
-    if (!res.ok) throw new Error("Error creando recurso");
-    showMessage("Recurso creado");
-    document.getElementById("recursoNombre").value = "";
-    document.getElementById("recursoCantidad").value = "";
-    document.getElementById("recursoUnidad").value = "";
-    closeModal(modalRecursos);
-    await fetchRecursos();
+      body: JSON.stringify({ nombre, cantidad, unidadMedida }),
+    })
+    if (!res.ok) throw new Error("Error creando recurso")
+    showMessage("Recurso creado")
+    document.getElementById("recursoNombre").value = ""
+    document.getElementById("recursoCantidad").value = ""
+    document.getElementById("recursoUnidad").value = ""
+    closeModal(modalRecursos)
+    await fetchRecursos()
   } catch (e) {
-    console.error(e);
-    showMessage("Error al crear recurso");
+    console.error(e)
+    showMessage("Error al crear recurso")
   }
-});
+})
 
 /* ==== CREATE TASK ==== */
 document.getElementById("formTarea").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const titulo = document.getElementById("tareaTitulo").value.trim();
-  const descripcion = document.getElementById("tareaDescripcion").value.trim();
-  const fecha = document.getElementById("tareaFecha").value;
-  const recursoIds = Array.from(document.getElementById("tareaRecursos").selectedOptions)
-                          .map(o => Number(o.value));
+  ev.preventDefault()
+  const titulo = document.getElementById("tareaTitulo").value.trim()
+  const descripcion = document.getElementById("tareaDescripcion").value.trim()
+  const fecha = document.getElementById("tareaFecha").value
+  const recursoIds = Array.from(document.getElementById("tareaRecursos").selectedOptions).map((o) => Number(o.value))
 
-  if (!titulo || !fecha) { 
-    showMessage("Completá título y fecha"); 
-    return; 
+  if (!titulo || !fecha) {
+    showMessage("Completá título y fecha")
+    return
   }
 
   try {
     const res = await fetch(`${API}/tareas-creadas`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ titulo, descripcion, fecha, usuarioId: user.id, recursoIds })
-    });
-    if (!res.ok) throw new Error("Error creando tarea");
-    showMessage("Tarea creada");
-    document.getElementById("formTarea").reset();
-    closeModal(modalTarea);
-    await fetchTareasCreadas();
+      body: JSON.stringify({ titulo, descripcion, fecha, usuarioId: user.id, recursoIds }),
+    })
+    if (!res.ok) throw new Error("Error creando tarea")
+    showMessage("Tarea creada")
+    document.getElementById("formTarea").reset()
+    closeModal(modalTarea)
+    await fetchTareasCreadas()
   } catch (e) {
-    console.error(e);
-    showMessage("Error creando tarea");
+    console.error(e)
+    showMessage("Error creando tarea")
   }
-});
+})
 
 /* ==== REFRESH ALL ==== */
 async function refreshAll() {
-  const recursos = await fetchRecursos();
-  const creadas = await fetchTareasCreadas();
-  const enProceso = await fetchTareasEnProceso();
-  const terminadas = await fetchTareasTerminadas();
-  updateOverview(creadas, enProceso, terminadas);
+  const recursos = await fetchRecursos()
+  const creadas = await fetchTareasCreadas()
+  const enProceso = await fetchTareasEnProceso()
+  const terminadas = await fetchTareasTerminadas()
+  updateOverview(creadas, enProceso, terminadas)
 }
-
 /* ==== INITIAL LOAD ==== */
-(async function init() {
-  document.getElementById("tareaFecha").value = new Date().toISOString().slice(0, 10);
-  await fetchUserInfo();
-  await refreshAll();
-})();
+;(async function init() {
+  document.getElementById("tareaFecha").value = new Date().toISOString().slice(0, 10)
+  await fetchUserInfo()
+  await refreshAll()
+})()
 
 /* ==== MODAL MANAGEMENT ==== */
-const modalTarea = document.getElementById('modalTarea');
-const modalRecursos = document.getElementById('modalRecursos');
+const modalTarea = document.getElementById("modalTarea")
+const modalRecursos = document.getElementById("modalRecursos")
 
 const openModalBtns = {
   tarea: document.querySelector('[data-section="nueva-tarea"]'),
-  recursos: document.querySelector('[data-section="recursos"]')
-};
+  recursos: document.querySelector('[data-section="recursos"]'),
+}
 
 const closeModalBtns = {
-  tarea: document.getElementById('closeTarea'),
-  recursos: document.getElementById('closeRecursos')
-};
+  tarea: document.getElementById("closeTarea"),
+  recursos: document.getElementById("closeRecursos"),
+}
 
-function openModal(modal) { modal.style.display = 'flex'; }
-function closeModal(modal) { modal.style.display = 'none'; }
+function openModal(modal) {
+  modal.style.display = "flex"
+}
+function closeModal(modal) {
+  modal.style.display = "none"
+}
 
 // abrir modales
-openModalBtns.tarea.addEventListener('click', () => openModal(modalTarea));
-openModalBtns.recursos.addEventListener('click', () => openModal(modalRecursos));
+openModalBtns.tarea.addEventListener("click", () => openModal(modalTarea))
+openModalBtns.recursos.addEventListener("click", () => openModal(modalRecursos))
 
 // cerrar modales
-closeModalBtns.tarea.addEventListener('click', () => closeModal(modalTarea));
-closeModalBtns.recursos.addEventListener('click', () => closeModal(modalRecursos));
+closeModalBtns.tarea.addEventListener("click", () => closeModal(modalTarea))
+closeModalBtns.recursos.addEventListener("click", () => closeModal(modalRecursos))
 
 // cerrar clic fuera del modal
-window.addEventListener('click', (e) => {
-  if (e.target === modalTarea) closeModal(modalTarea);
-  if (e.target === modalRecursos) closeModal(modalRecursos);
-});
+window.addEventListener("click", (e) => {
+  if (e.target === modalTarea) closeModal(modalTarea)
+  if (e.target === modalRecursos) closeModal(modalRecursos)
+})
 
 /* ==== UPDATE OVERVIEW ==== */
 function updateOverview(creadas, enProceso, terminadas) {
-  document.getElementById("countCreadas").textContent = creadas.length;
-  document.getElementById("countEnProceso").textContent = enProceso.length;
-  document.getElementById("countTerminadas").textContent = terminadas.length;
+  document.getElementById("countCreadas").textContent = creadas.length
+  document.getElementById("countEnProceso").textContent = enProceso.length
+  document.getElementById("countTerminadas").textContent = terminadas.length
 }

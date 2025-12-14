@@ -10,4 +10,6 @@ public interface TareaCreadaService {
     List<TareaResponse> listByUsuario(Long usuarioId);
     TareaResponse getById(Long id);
     void delete(Long id);
+    TareaResponse moverAEnProceso(Long id);
+    TareaResponse moverDesdeEnProceso(Long id);
 }

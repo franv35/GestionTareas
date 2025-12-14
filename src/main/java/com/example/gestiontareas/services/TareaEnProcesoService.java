@@ -10,4 +10,7 @@ public interface TareaEnProcesoService {
     List<TareaResponse> listByUsuario(Long usuarioId);
     TareaResponse getById(Long id);
     void delete(Long id);
+    TareaResponse moverATerminada(Long id);
+    TareaResponse moverDesdeTerminada(Long id);
+    
 }

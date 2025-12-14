@@ -3,11 +3,13 @@ package com.example.gestiontareas.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+
+
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Tarea {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // importante: IDENTITY no funciona bien con TABLE_PER_CLASS
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
@@ -16,7 +18,7 @@ public abstract class Tarea {
     private String descripcion;
 
     @Column(nullable = false)
-    private String fecha; // ISO string (yyyy-MM-dd)
+    private String fecha;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -29,6 +31,9 @@ public abstract class Tarea {
         inverseJoinColumns = @JoinColumn(name = "recurso_id")
     )
     private List<Recurso> recursos;
+
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
     // Getters y setters
     public Long getId() { return id; }
@@ -48,4 +53,8 @@ public abstract class Tarea {
 
     public List<Recurso> getRecursos() { return recursos; }
     public void setRecursos(List<Recurso> recursos) { this.recursos = recursos; }
+    
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado estado) { this.estado = estado; }
 }
+
