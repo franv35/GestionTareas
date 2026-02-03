@@ -40,9 +40,10 @@ public class ProyectoServiceImpl implements ProyectoService {
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
     }
 
+    // 🔥 SOLUCIÓN REAL
     @Override
-    public List<Proyecto> listarTodos() {
-        return proyectoRepository.findAll();
+    public List<Proyecto> listarPorUsuario(Long usuarioId) {
+        return proyectoRepository.findByUsuarioId(usuarioId);
     }
 
     @Override
@@ -58,14 +59,18 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public void eliminarProyecto(Long id) {
         Proyecto proyecto = obtenerProyecto(id);
+
+        // 🔥 limpieza explícita (opcional pero recomendable)
+        tareaRepository.deleteAll(
+            tareaRepository.findByProyectoId(id)
+        );
+
         proyectoRepository.delete(proyecto);
     }
 
+    // 🔥 SOLUCIÓN AL REDIRECT A LOGIN
     @Override
     public List<Tarea> obtenerTareas(Long proyectoId) {
-        Proyecto proyecto = obtenerProyecto(proyectoId);
-        return proyecto.getTareas();
-        // Alternativa:
-        // return tareaRepository.findByProyectoId(proyectoId);
+        return tareaRepository.findByProyectoId(proyectoId);
     }
 }

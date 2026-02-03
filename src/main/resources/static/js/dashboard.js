@@ -1,165 +1,103 @@
+/* ================= CONFIG ================= */
 const API = "http://localhost:8080/api";
-const messageEl = document.getElementById("message");
 
-// obtenemos el token del login
+/* ================= AUTH ================= */
 const token = localStorage.getItem("token");
+const usuarioId = localStorage.getItem("usuarioId");
+const usuarioEmail = localStorage.getItem("usuarioEmail");
+const usuarioNombre = localStorage.getItem("usuarioNombre");
 
-// si no hay token, redirigimos al login
-if (!token) {
+if (!token || token.split(".").length !== 3) {
+  localStorage.clear();
   window.location.href = "login.html";
 }
 
-// headers con autenticación
 function authHeaders() {
   return {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`
+    Authorization: `Bearer ${token}`
   };
 }
 
-// usuario logueado
-let user = null;
+/* ================= URL PARAMS ================= */
+const params = new URLSearchParams(window.location.search);
+const proyectoId = params.get("proyectoId");
 
-// mostrar mensajes tipo toast
-function showMessage(text, time = 3000) {
-  messageEl.textContent = text;
-  messageEl.style.display = "block";
-  messageEl.style.opacity = "1";
-  setTimeout(() => { messageEl.style.opacity = "0"; }, time);
-  setTimeout(() => { messageEl.style.display = "none"; }, time + 200);
+if (!proyectoId) {
+  alert("Proyecto no especificado");
+  window.location.href = "proyectos.html";
 }
 
-// obtener info del usuario
-async function fetchUserInfo() {
-  try {
-    const res = await fetch(`${API}/usuarios/me`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudo obtener info del usuario");
-    user = await res.json();
-    document.getElementById("userEmail").textContent = user.email;
-    console.log("Usuario cargado:", user);
-  } catch (e) {
-    console.error(e);
-    showMessage("Error obteniendo información del usuario");
-    window.location.href = "login.html";
-  }
-}
+/* ================= USER INFO ================= */
+document.getElementById("userInfo").innerText =
+  `${usuarioNombre} — ${usuarioEmail}`;
 
-// logout
+/* ================= LOGOUT ================= */
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("token");
+  localStorage.clear();
   window.location.href = "login.html";
 });
 
-// navegación sidebar
-document.querySelectorAll(".sidebar li[data-section]").forEach(li => {
-  li.addEventListener("click", () => {
-    document.querySelectorAll(".sidebar li").forEach(n => n.classList.remove("active"));
-    li.classList.add("active");
-
-    const section = li.getAttribute("data-section");
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
-
-    // mostrar la página correspondiente si existe
-    const page = document.getElementById(section);
-    if (page) page.classList.add("visible");
-
-    // opcional: cambiar título
-    const pageTitleEl = document.getElementById("pageTitle");
-    if (pageTitleEl) pageTitleEl.textContent = li.textContent;
-
-    // aquí podrías llamar fetchGastos / fetchIngresos si las agregas
+/* ================= FETCH ================= */
+async function fetchProyecto() {
+  const res = await fetch(`${API}/proyectos/${proyectoId}`, {
+    headers: authHeaders()
   });
-});
+  if (!res.ok) throw new Error("Proyecto no encontrado");
+  return res.json();
+}
 
-/* ==== FETCH DATA ==== */
+async function fetchTareas() {
+  const res = await fetch(`${API}/proyectos/${proyectoId}/tareas`, {
+    headers: authHeaders()
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
 async function fetchRecursos() {
-  try {
-    const res = await fetch(`${API}/recursos`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar los recursos");
-    const data = await res.json();
-    renderRecursos(data);
-    return data;
-  } catch (e) {
-    console.error(e);
-    showMessage("Error cargando recursos");
-    return [];
-  }
-}
-
-async function fetchTareasCreadas() {
-  try {
-    const res = await fetch(`${API}/tareas-creadas/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas creadas");
-    const data = await res.json();
-    renderTareas("listaTareasCreadas", data);
-    attachDeleteHandlers("listaTareasCreadas");
-    return data;
-  } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas creadas");
-    return [];
-  }
-}
-
-async function fetchTareasEnProceso() {
-  try {
-    const res = await fetch(`${API}/tareas-en-proceso/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas en proceso");
-    const data = await res.json();
-    renderTareas("listaTareasEnProceso", data);
-    attachDeleteHandlers("listaTareasEnProceso");
-    return data;
-  } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas en proceso");
-    return [];
-  }
-}
-
-async function fetchTareasTerminadas() {
-  try {
-    const res = await fetch(`${API}/tareas-terminadas/usuario/${user.id}`, { headers: authHeaders() });
-    if (!res.ok) throw new Error("No se pudieron cargar las tareas terminadas");
-    const data = await res.json();
-    renderTareas("listaTareasTerminadas", data);
-    attachDeleteHandlers("listaTareasTerminadas");
-    return data;
-  } catch (e) {
-    console.error(e);
-    showMessage("Error cargando tareas terminadas");
-    return [];
-  }
-}
-
-/* ==== RENDER ==== */
-function renderRecursos(recursos) {
-  const recursoSelect = document.getElementById("tareaRecursos");
-  recursoSelect.innerHTML = "";
-  recursos.forEach(r => {
-    const option = document.createElement("option");
-    option.value = r.id;
-    option.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`;
-    recursoSelect.appendChild(option);
+  const res = await fetch(`${API}/recursos`, {
+    headers: authHeaders()
   });
+  if (!res.ok) return [];
+  return res.json();
+}
 
-  document.getElementById("listaRecursos").innerHTML = recursos
-    .map(r => `<li>${r.nombre} — ${r.cantidad} ${r.unidadMedida}</li>`)
-    .join("");
+/* ================= RENDER ================= */
+function renderProyecto(proyecto) {
+  document.getElementById("tituloProyecto").innerText = proyecto.nombre;
+  document.getElementById("descripcionProyecto").innerText =
+    proyecto.descripcion || "Sin descripción";
+}
+
+function renderRecursos(recursos) {
+  const select = document.getElementById("tareaRecursos");
+  select.innerHTML = "";
+
+  recursos.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.id;
+    opt.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`;
+    select.appendChild(opt);
+  });
 }
 
 function renderTareas(listId, tareas) {
   const ul = document.getElementById(listId);
   ul.innerHTML = "";
+
   tareas.forEach(t => {
     const li = document.createElement("li");
-    li.classList.add("tarea-card");
+    li.className = "tarea-card";
     li.innerHTML = `
       <strong>${t.titulo}</strong><br>
       <span>${t.descripcion || "-"}</span><br>
       <small>${t.fecha}</small><br>
-      <em>Recursos: ${(t.recursos && t.recursos.length > 0) 
-        ? t.recursos.map(r => r.nombre).join(", ") 
-        : "—"}</em>
+      <em>Recursos: ${
+        t.recursos?.length
+          ? t.recursos.map(r => r.nombre).join(", ")
+          : "—"
+      }</em>
       <div class="actions">
         <button class="btn-delete" data-id="${t.id}">Eliminar</button>
       </div>
@@ -168,145 +106,87 @@ function renderTareas(listId, tareas) {
   });
 }
 
-/* ==== DELETE HANDLER ==== */
-function attachDeleteHandlers(listId) {
-  const ul = document.getElementById(listId);
-  ul.querySelectorAll(".btn-delete").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const id = e.target.dataset.id;
+/* ================= DELETE ================= */
+function attachDeleteHandlers() {
+  document.querySelectorAll(".btn-delete").forEach(btn => {
+    btn.onclick = async () => {
       if (!confirm("¿Eliminar tarea?")) return;
-      try {
-        let endpoint = "";
-        if (listId === "listaTareasCreadas") endpoint = "tareas-creadas";
-        if (listId === "listaTareasEnProceso") endpoint = "tareas-en-proceso";
-        if (listId === "listaTareasTerminadas") endpoint = "tareas-terminadas";
 
-        const res = await fetch(`${API}/${endpoint}/${id}`, {
-          method: "DELETE",
-          headers: authHeaders()
-        });
-        if (!res.ok) throw new Error("No se pudo eliminar");
-        showMessage("Tarea eliminada");
-        await refreshAll();
-      } catch (err) {
-        console.error(err);
-        showMessage("Error eliminando tarea");
-      }
-    });
+      await fetch(`${API}/tareas/${btn.dataset.id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+      });
+
+      await refreshAll();
+    };
   });
 }
 
-/* ==== CREATE RESOURCE ==== */
-document.getElementById("btnCrearRecurso").addEventListener("click", async () => {
-  const nombre = document.getElementById("recursoNombre").value.trim();
-  const cantidad = parseInt(document.getElementById("recursoCantidad").value);
-  const unidadMedida = document.getElementById("recursoUnidad").value.trim();
+/* ================= CREATE TAREA ================= */
+document.getElementById("formTarea").addEventListener("submit", async e => {
+  e.preventDefault();
 
-  if (!nombre || !cantidad || !unidadMedida) { 
-    showMessage("Completá todos los campos"); 
-    return; 
+  const titulo = tareaTitulo.value.trim();
+  const descripcion = tareaDescripcion.value.trim();
+  const fecha = tareaFecha.value;
+  const recursoIds = Array.from(tareaRecursos.selectedOptions).map(o =>
+    Number(o.value)
+  );
+
+  if (!titulo || !fecha) {
+    alert("Completá título y fecha");
+    return;
   }
 
-  try {
-    const res = await fetch(`${API}/recursos`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ nombre, cantidad, unidadMedida })
-    });
-    if (!res.ok) throw new Error("Error creando recurso");
-    showMessage("Recurso creado");
-    document.getElementById("recursoNombre").value = "";
-    document.getElementById("recursoCantidad").value = "";
-    document.getElementById("recursoUnidad").value = "";
-    closeModal(modalRecursos);
-    await fetchRecursos();
-  } catch (e) {
-    console.error(e);
-    showMessage("Error al crear recurso");
-  }
+  await fetch(`${API}/tareas`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      titulo,
+      descripcion,
+      fecha,
+      proyectoId,
+      usuarioId,
+      recursoIds
+    })
+  });
+
+  e.target.reset();
+  await refreshAll();
 });
 
-/* ==== CREATE TASK ==== */
-document.getElementById("formTarea").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const titulo = document.getElementById("tareaTitulo").value.trim();
-  const descripcion = document.getElementById("tareaDescripcion").value.trim();
-  const fecha = document.getElementById("tareaFecha").value;
-  const recursoIds = Array.from(document.getElementById("tareaRecursos").selectedOptions)
-                          .map(o => Number(o.value));
+/* ================= OVERVIEW ================= */
+function updateStats(tareas) {
+  const creadas = tareas.filter(t => t.estado === "CREADA");
+  const proceso = tareas.filter(t => t.estado === "EN_PROCESO");
+  const terminadas = tareas.filter(t => t.estado === "TERMINADA");
 
-  if (!titulo || !fecha) { 
-    showMessage("Completá título y fecha"); 
-    return; 
-  }
+  statCreadas.innerText = creadas.length;
+  statProceso.innerText = proceso.length;
+  statTerminadas.innerText = terminadas.length;
 
-  try {
-    const res = await fetch(`${API}/tareas-creadas`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ titulo, descripcion, fecha, usuarioId: user.id, recursoIds })
-    });
-    if (!res.ok) throw new Error("Error creando tarea");
-    showMessage("Tarea creada");
-    document.getElementById("formTarea").reset();
-    closeModal(modalTarea);
-    await fetchTareasCreadas();
-  } catch (e) {
-    console.error(e);
-    showMessage("Error creando tarea");
-  }
-});
+  renderTareas("listaTareasCreadas", creadas);
+  renderTareas("listaTareasEnProceso", proceso);
+  renderTareas("listaTareasTerminadas", terminadas);
 
-/* ==== REFRESH ALL ==== */
-async function refreshAll() {
-  const recursos = await fetchRecursos();
-  const creadas = await fetchTareasCreadas();
-  const enProceso = await fetchTareasEnProceso();
-  const terminadas = await fetchTareasTerminadas();
-  updateOverview(creadas, enProceso, terminadas);
+  attachDeleteHandlers();
 }
 
-/* ==== INITIAL LOAD ==== */
+/* ================= REFRESH ================= */
+async function refreshAll() {
+  const [proyecto, tareas, recursos] = await Promise.all([
+    fetchProyecto(),
+    fetchTareas(),
+    fetchRecursos()
+  ]);
+
+  renderProyecto(proyecto);
+  renderRecursos(recursos);
+  updateStats(tareas);
+}
+
+/* ================= INIT ================= */
 (async function init() {
-  document.getElementById("tareaFecha").value = new Date().toISOString().slice(0, 10);
-  await fetchUserInfo();
+  tareaFecha.value = new Date().toISOString().slice(0, 10);
   await refreshAll();
 })();
-
-/* ==== MODAL MANAGEMENT ==== */
-const modalTarea = document.getElementById('modalTarea');
-const modalRecursos = document.getElementById('modalRecursos');
-
-const openModalBtns = {
-  tarea: document.querySelector('[data-section="nueva-tarea"]'),
-  recursos: document.querySelector('[data-section="recursos"]')
-};
-
-const closeModalBtns = {
-  tarea: document.getElementById('closeTarea'),
-  recursos: document.getElementById('closeRecursos')
-};
-
-function openModal(modal) { modal.style.display = 'flex'; }
-function closeModal(modal) { modal.style.display = 'none'; }
-
-// abrir modales
-openModalBtns.tarea.addEventListener('click', () => openModal(modalTarea));
-openModalBtns.recursos.addEventListener('click', () => openModal(modalRecursos));
-
-// cerrar modales
-closeModalBtns.tarea.addEventListener('click', () => closeModal(modalTarea));
-closeModalBtns.recursos.addEventListener('click', () => closeModal(modalRecursos));
-
-// cerrar clic fuera del modal
-window.addEventListener('click', (e) => {
-  if (e.target === modalTarea) closeModal(modalTarea);
-  if (e.target === modalRecursos) closeModal(modalRecursos);
-});
-
-/* ==== UPDATE OVERVIEW ==== */
-function updateOverview(creadas, enProceso, terminadas) {
-  document.getElementById("countCreadas").textContent = creadas.length;
-  document.getElementById("countEnProceso").textContent = enProceso.length;
-  document.getElementById("countTerminadas").textContent = terminadas.length;
-}

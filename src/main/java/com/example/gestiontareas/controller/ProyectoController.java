@@ -33,14 +33,14 @@ public class ProyectoController {
         return ResponseEntity.ok(proyectoService.crearProyecto(usuarioId, proyecto));
     }
 
+    @GetMapping("/usuario/{usuarioId}") // 🔥 NUEVO
+    public ResponseEntity<List<Proyecto>> listarPorUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(proyectoService.listarPorUsuario(usuarioId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Proyecto> obtenerProyecto(@PathVariable Long id) {
         return ResponseEntity.ok(proyectoService.obtenerProyecto(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Proyecto>> listarProyectos() {
-        return ResponseEntity.ok(proyectoService.listarTodos());
     }
 
     @PutMapping("/{id}")

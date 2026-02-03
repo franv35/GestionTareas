@@ -77,17 +77,20 @@ if (logoutBtn) {
 // ================= PROYECTOS =================
 async function cargarProyectos() {
   try {
-    const res = await fetch(`${API}/usuarios/${usuarioId}/proyectos`, {
+    const res = await fetch(`${API}/proyectos`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    if (res.status === 401 || res.status === 403) {
+    if (!res.ok) {
       throw new Error("TOKEN_INVALIDO");
     }
 
     const proyectos = await res.json();
+
+    // 🧪 DEBUG CRÍTICO
+    console.log("Proyectos recibidos:", proyectos);
 
     proyectosGrid.innerHTML = "";
     statProyectos.innerText = proyectos.length;
@@ -96,19 +99,31 @@ async function cargarProyectos() {
     let completadas = 0;
 
     proyectos.forEach(p => {
-      if (p.tareas) {
+      // Conteo de tareas
+      if (Array.isArray(p.tareas)) {
         p.tareas.forEach(t => {
           if (t.estado === "EN_PROCESO") enProceso++;
           if (t.estado === "TERMINADA") completadas++;
         });
       }
 
-      const card = document.createElement("div");
-      card.className = "proyecto-card";
-      card.innerHTML = `
-        <h4>${p.nombre}</h4>
-        <p>${p.descripcion || "Sin descripción"}</p>
-      `;
+	  const card = document.createElement("div");
+	  card.className = "proyecto-card";
+
+	  card.innerHTML = `
+	    <div class="proyecto-header">
+	      <h3>
+	        <a 
+	          href="dashboard.html?proyectoId=${p.id}" 
+	          class="proyecto-link"
+	        >
+	          ${p.nombre}
+	        </a>
+	      </h3>
+	    </div>
+
+	    <p>${p.descripcion || "Sin descripción"}</p>
+	  `;
       proyectosGrid.appendChild(card);
     });
 
@@ -117,8 +132,6 @@ async function cargarProyectos() {
 
   } catch (error) {
     console.error("Error cargando proyectos:", error);
-
-    // 🔐 Token vencido o inválido
     localStorage.clear();
     window.location.href = "login.html";
   }

@@ -11,7 +11,7 @@ public interface ProyectoService {
 
     Proyecto obtenerProyecto(Long id);
 
-    List<Proyecto> listarTodos();
+    List<Proyecto> listarPorUsuario(Long usuarioId); // 🔥 CAMBIO
 
     Proyecto editarProyecto(Long id, Proyecto proyecto);
 
