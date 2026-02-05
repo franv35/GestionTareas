@@ -3,7 +3,6 @@ const API = "http://localhost:8080/api";
 
 /* ================= AUTH ================= */
 const token = localStorage.getItem("token");
-const usuarioId = localStorage.getItem("usuarioId");
 const usuarioEmail = localStorage.getItem("usuarioEmail");
 const usuarioNombre = localStorage.getItem("usuarioNombre");
 
@@ -19,18 +18,28 @@ function authHeaders() {
   };
 }
 
-/* ================= URL PARAMS ================= */
+/* ================= PROYECTO CONTEXTO (FIX CLAVE) ================= */
 const params = new URLSearchParams(window.location.search);
-const proyectoId = params.get("proyectoId");
+let proyectoId = params.get("proyectoId");
+
+// fallback seguro (evita perder el proyecto al enviar formularios)
+if (!proyectoId) {
+  proyectoId = localStorage.getItem("proyectoIdActual");
+}
 
 if (!proyectoId) {
   alert("Proyecto no especificado");
   window.location.href = "proyectos.html";
 }
 
+// persistimos el contexto del proyecto
+localStorage.setItem("proyectoIdActual", proyectoId);
+
 /* ================= USER INFO ================= */
-document.getElementById("userInfo").innerText =
-  `${usuarioNombre} — ${usuarioEmail}`;
+const userInfoEl = document.getElementById("userInfo");
+if (userInfoEl) {
+  userInfoEl.innerText = `${usuarioNombre} — ${usuarioEmail}`;
+}
 
 /* ================= LOGOUT ================= */
 document.getElementById("logoutBtn").addEventListener("click", () => {
@@ -129,27 +138,47 @@ document.getElementById("formTarea").addEventListener("submit", async e => {
   const titulo = tareaTitulo.value.trim();
   const descripcion = tareaDescripcion.value.trim();
   const fecha = tareaFecha.value;
-  const recursoIds = Array.from(tareaRecursos.selectedOptions).map(o =>
-    Number(o.value)
-  );
+
+  const recursoIds = Array.from(
+    tareaRecursos.selectedOptions
+  ).map(o => Number(o.value));
 
   if (!titulo || !fecha) {
     alert("Completá título y fecha");
     return;
   }
 
-  await fetch(`${API}/tareas`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify({
-      titulo,
-      descripcion,
-      fecha,
-      proyectoId,
-      usuarioId,
-      recursoIds
-    })
-  });
+  // 1️⃣ Crear tarea en el proyecto actual
+  const res = await fetch(
+    `${API}/tareas/proyecto/${proyectoId}`,
+    {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({
+        titulo,
+        descripcion,
+        fecha
+      })
+    }
+  );
+
+  if (!res.ok) {
+    alert("Error al crear tarea");
+    return;
+  }
+
+  const tareaCreada = await res.json();
+
+  // 2️⃣ Asignar recursos
+  for (const recursoId of recursoIds) {
+    await fetch(
+      `${API}/tareas/${tareaCreada.id}/recursos/${recursoId}`,
+      {
+        method: "POST",
+        headers: authHeaders()
+      }
+    );
+  }
 
   e.target.reset();
   await refreshAll();
