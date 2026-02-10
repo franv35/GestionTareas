@@ -1,63 +1,67 @@
 package com.example.gestiontareas.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Recurso {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
+
     private int cantidad;
-    private String unidad; // ej: "kg", "lts", "unidades"
 
-    @ManyToOne
-    @JoinColumn(name = "tarea_id")
-    private Tarea tarea;
-    
-    //Getters y Setters
+    private String unidad;
 
-	public Long getId() {
-		return id;
-	}
+    @ManyToMany(mappedBy = "recursos")
+    @JsonIgnore
+    private List<Tarea> tareas = new ArrayList<>();
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /* ================= GETTERS & SETTERS ================= */
 
-	public String getNombre() {
-		return nombre;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Tarea getTarea() {
-		return tarea;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public void setTarea(Tarea tarea) {
-		this.tarea = tarea;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public int getCantidad() {
-		return cantidad;
-	}
+    public int getCantidad() {
+        return cantidad;
+    }
 
-	public void setCantidad(int cantidad) {
-		this.cantidad = cantidad;
-	}
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
 
-	public String getUnidad() {
-		return unidad;
-	}
+    public String getUnidad() {
+        return unidad;
+    }
 
-	public void setUnidad(String unidad) {
-		this.unidad = unidad;
-	}
-	
+    public void setUnidad(String unidad) {
+        this.unidad = unidad;
+    }
+
+    public List<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
 }
-

@@ -34,6 +34,9 @@ public class TareaServiceImpl implements TareaService {
 
     @Override
     public Tarea crearTarea(Long proyectoId, Tarea tarea) {
+    	if (tarea.getEstado() == null) {
+            tarea.setEstado(EstadoTarea.PENDIENTE);
+        }
         Proyecto proyecto = proyectoRepository.findById(proyectoId)
                 .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
 

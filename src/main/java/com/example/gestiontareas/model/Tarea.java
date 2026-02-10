@@ -1,7 +1,11 @@
 package com.example.gestiontareas.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Tarea {
@@ -13,15 +17,20 @@ public class Tarea {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    private EstadoTarea estado;
+    private EstadoTarea estado = EstadoTarea.PENDIENTE;
 
     @ManyToOne
-    @JoinColumn(name = "proyecto_id")
+    @JoinColumn(name = "proyecto_id", nullable = false)
+    @JsonBackReference
     private Proyecto proyecto;
 
-    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL)
-    private List<Recurso> recursos;
-    
+    @ManyToMany
+    @JoinTable(
+        name = "tarea_recurso",
+        joinColumns = @JoinColumn(name = "tarea_id"),
+        inverseJoinColumns = @JoinColumn(name = "recurso_id")
+    )
+    private List<Recurso> recursos = new ArrayList<>();    
     
     //Getters y Setters
 

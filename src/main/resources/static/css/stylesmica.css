@@ -1,5 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
+/* ======================================================
+   VARIABLES
+   ====================================================== */
 :root {
   --color-primario: #00bcd4;
   --color-primario-hover: #00a4bb;
@@ -12,7 +15,9 @@
   --rojo: #c62828;
 }
 
-/* ===== RESET ===== */
+/* ======================================================
+   RESET
+   ====================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -24,31 +29,27 @@ body {
   background-color: var(--negro);
   color: var(--blanco);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-/* ===== HEADER ===== */
-header {
-  text-align: center;
-  padding: 2rem 1rem;
-  background: linear-gradient(to right, var(--gris-oscuro), var(--negro));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+/* ======================================================
+   UTILIDADES
+   ====================================================== */
+.hidden {
+  display: none !important;
 }
 
-header h1 {
-  font-weight: 700;
-  font-size: 1.8rem;
-}
-
-/* ===== DASHBOARD ===== */
+/* ======================================================
+   LAYOUT GENERAL (NO TOCAR POSICIÓN)
+   ====================================================== */
 .app {
   display: flex;
-  flex: 1;
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
+  width: 100%;
 }
 
-/* Sidebar */
+/* ======================================================
+   SIDEBAR
+   ====================================================== */
 .sidebar {
   width: 240px;
   background-color: var(--gris-oscuro);
@@ -56,13 +57,13 @@ header h1 {
   flex-direction: column;
   justify-content: space-between;
   padding: 1.5rem;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
 }
 
 .sidebar .brand {
   text-align: center;
-  font-weight: 700;
   font-size: 1.4rem;
+  font-weight: 700;
   color: var(--color-primario);
 }
 
@@ -76,8 +77,8 @@ header h1 {
   border-radius: 8px;
   margin-bottom: 0.5rem;
   cursor: pointer;
-  transition: background 0.2s ease;
   font-weight: 500;
+  transition: background 0.2s ease;
 }
 
 .nav-item:hover {
@@ -87,223 +88,53 @@ header h1 {
 .nav-item.active {
   background-color: var(--color-primario);
   color: var(--negro);
-  font-weight: 600;
 }
 
 .nav-item.logout {
-  margin-top: 1rem;
   color: var(--gris-claro);
 }
 
-/* Main */
-.main {
-  flex: 1;
-  background-color: var(--negro);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Topbar */
-.topbar {
-  padding: 1.2rem 2rem;
-  background-color: var(--gris-oscuro);
-  border-bottom: 1px solid #2a2a2a;
-}
-
-.topbar h2 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-/* Content: columnas tipo Kanban */
-.content {
-  flex: 1;
-  display: flex;
-  gap: 1.5rem;
-  padding: 2rem;
-  overflow-x: auto;
-}
-
-/* ===== ESTILOS PROYECTOS ===== */
-
-.content-proyectos {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow-y: auto;
-}
-
-/* ======================
-   VISTAS
-   ====================== */
-
-.vista-seccion {
-  display: none;
-}
-
-.vista-seccion.active {
-  display: block;
-}
-
-/* ======================
-   ESTADÍSTICAS
-   ====================== */
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-}
-
-.stat-card {
-  background-color: var(--gris-oscuro);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.stat-card-primario {
-  background-color: var(--color-primario);
-}
-
-.stat-label {
+.sidebar-footer {
+  border-top: 1px solid var(--gris);
+  padding-top: 1rem;
+  text-align: center;
   font-size: 0.85rem;
   color: var(--gris-claro);
 }
 
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--blanco);
-}
-
-.stat-value-verde {
-  color: var(--verde);
-}
-
-/* ======================
-   LISTA DE PROYECTOS
-   ====================== */
-
-.proyectos-grid {
+/* ======================================================
+   MAIN (FIX INTERACTIVIDAD)
+   ====================================================== */
+.main {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  position: relative;   /* 🔥 CLAVE */
+  overflow: visible;    /* 🔥 CLAVE */
+}
+
+/* ======================================================
+   CONTENT
+   ====================================================== */
+.content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
   gap: 1.5rem;
+  overflow-x: auto;
+  position: relative;   /* 🔥 evita overlays */
 }
 
-/* ======================
-   TARJETA PROYECTO
-   ====================== */
-
-.proyecto-card {
-  background-color: var(--gris-oscuro);
-  border-radius: 14px;
-  padding: 1.5rem;
-  width: 100%;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.proyecto-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-}
-
-/* ======================
-   HEADER PROYECTO
-   ====================== */
-
-.proyecto-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
-}
-
-/* 🔗 TÍTULO COMO LINK */
-.proyecto-header a {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--blanco);
-  text-decoration: none;
-}
-
-.proyecto-header a:hover {
-  text-decoration: underline;
-  color: var(--color-primario);
-}
-
-/* Badge opcional */
-.proyecto-badge {
-  background-color: var(--color-primario);
-  color: var(--negro);
-  padding: 0.35rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* ======================
-   STATS DEL PROYECTO
-   ====================== */
-
-.proyecto-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-radius: 8px;
-  background-color: var(--gris);
-}
-
-.stat-nombre {
-  color: var(--gris-claro);
-}
-
-.stat-numero {
-  font-weight: 600;
-  color: var(--blanco);
-}
-
-/* ======================
-   PROGRESO
-   ====================== */
-
-.proyecto-progreso {
-  margin-top: 0.8rem;
-}
-
-.progreso-barra {
-  height: 8px;
-  background-color: var(--gris);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.progreso-fill {
-  height: 100%;
-  background-color: var(--color-primario);
-  transition: width 0.3s ease;
-}
-
-
-/* ===== COLUMNAS DE TAREAS (KANBAN) ===== */
-
+/* ======================================================
+   KANBAN
+   ====================================================== */
 .tarea-column {
   background-color: var(--gris-oscuro);
   flex: 1;
-  min-width: 250px;
+  min-width: 260px;
   border-radius: 12px;
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
 }
 
@@ -313,112 +144,69 @@ header h1 {
   color: var(--gris-claro);
 }
 
-/* Cards de tareas */
+/* ======================================================
+   TARJETAS
+   ====================================================== */
 .tarea-card {
   background-color: var(--gris);
   padding: 1rem;
   border-radius: 10px;
   margin-bottom: 0.8rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-.tarea-card .actions {
-  margin-top: 0.5rem;
-  text-align: right;
-}
-
-.tarea-card .btn-delete {
-  background-color: var(--rojo);
-  border: none;
-  color: var(--blanco);
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.tarea-card .btn-delete:hover {
-  background-color: #a91c1c;
-}
-
-/* ===== BOTONES ===== */
-
+/* ======================================================
+   BOTONES
+   ====================================================== */
+button,
 button.btn {
   background-color: var(--color-primario);
   color: var(--blanco);
-  padding: 0.8rem 1.5rem;
+  padding: 0.75rem 1.4rem;
   border-radius: 8px;
-  cursor: pointer;
   border: none;
-  transition: 0.2s;
+  cursor: pointer;
   font-weight: 500;
 }
 
-button.btn:hover {
+button:hover {
   background-color: var(--color-primario-hover);
 }
 
-button.btn-secondary {
-  background-color: var(--gris);
-  color: var(--blanco);
-  margin-left: 0.5rem;
-}
-
-button.btn-secondary:hover {
-  background-color: #3a3a3a;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* ===== FORMULARIOS ===== */
-
+/* ======================================================
+   FORMULARIOS
+   ====================================================== */
 .form label {
   display: block;
   margin-bottom: 1rem;
-  color: var(--blanco);
 }
 
 .form input,
-.form select,
-.form textarea {
+.form textarea,
+.form select {
   width: 100%;
   padding: 0.75rem;
-  border: none;
+  margin-top: 0.4rem;
   border-radius: 8px;
+  border: none;
   background-color: var(--gris);
   color: var(--blanco);
-  margin-top: 0.5rem;
-  font-family: "Inter", sans-serif;
 }
 
-.form input:focus,
-.form select:focus,
-.form textarea:focus {
-  outline: 2px solid var(--color-primario);
-  background-color: #222;
-}
-
-.form textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-/* ===== MODALES ===== */
-
+/* ======================================================
+   MODALES (FIX REAL)
+   ====================================================== */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.6);
   z-index: 1000;
+}
+
+.modal:not(.hidden) {
+  display: flex;
 }
 
 .modal-content {
@@ -426,7 +214,7 @@ button.btn-secondary:hover {
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  max-width: 420px;
   position: relative;
 }
 
@@ -435,69 +223,31 @@ button.btn-secondary:hover {
   top: 1rem;
   right: 1rem;
   font-size: 1.5rem;
-  color: var(--gris-claro);
   cursor: pointer;
 }
 
-/* ===== TOAST ===== */
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: var(--gris-oscuro);
-  color: var(--blanco);
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  display: none;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  z-index: 2000;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* ===== ANIMACIONES ===== */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== SIDEBAR FOOTER ===== */
-
-.sidebar-footer {
+/* ======================================================
+   EMPTY STATE (PROYECTOS SIN PROYECTOS)
+   ====================================================== */
+.empty-state {
+  width: 100%;
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--gris);
-  color: var(--gris-claro);
-  font-size: 0.85rem;
+  padding: 3rem;
+  background-color: var(--gris-oscuro);
+  border-radius: 12px;
 }
 
-/* ===== RESPONSIVE ===== */
+.empty-state p {
+  margin-bottom: 1rem;
+  color: var(--gris-claro);
+}
 
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
 @media (max-width: 1024px) {
   .content {
     flex-direction: column;
-  }
-
-  .proyectos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
@@ -506,392 +256,15 @@ button.btn-secondary:hover {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 1rem;
-  }
-
-  .sidebar .brand {
-    flex-basis: 100%;
-    text-align: center;
-    margin-bottom: 1rem;
   }
 
   .nav-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 0;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .main {
+    padding-top: 1rem;
   }
-
-  .proyectos-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .topbar {
-    padding: 1rem;
-  }
-
-  .content {
-    padding: 1rem;
-  }
-}
-
-/* =========================================================
-   ESTILOS EXCLUSIVOS PARA INDEX (MODO OSCURO COHERENTE)
-   ========================================================= */
-
-body#index {
-  background: var(--negro) !important;
-  color: var(--blanco) !important;
-  font-family: "Inter", sans-serif !important;
-}
-
-/* Header del Index */
-body#index header.index-header {
-  background: linear-gradient(to bottom, #111, #0c0c0c) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-  padding: 60px 20px 20px;
-  text-align: center;
-}
-
-body#index header.index-header h1 {
-  font-size: 2.4rem;
-  margin-bottom: 12px;
-  color: var(--blanco) !important;
-}
-
-body#index header.index-header p {
-  font-size: 1.1rem;
-  color: #d0d0d0 !important;
-  opacity: 0.85;
-}
-
-/* ===============================
-   CONTENEDOR DE OPCIONES (3 columnas)
-   =============================== */
-body#index .index-options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
-  padding: 40px 60px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Tarjetas */
-body#index .option-card {
-  background: var(--gris-oscuro) !important;
-  color: var(--blanco) !important;
-  border-radius: 14px;
-  padding: 30px 25px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  transition: 0.2s ease;
-  cursor: pointer;
-}
-
-body#index .option-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.55);
-}
-
-body#index .option-card h2 {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-weight: 600;
-  font-size: 1.3rem;
-  color: var(--blanco);
-}
-
-/* Botones dentro de tarjetas */
-body#index .option-card .btn-option {
-  padding: 10px 22px;
-  background: var(--color-primario);
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-body#index .option-card .btn-option:hover {
-  background: var(--color-primario-hover);
-}
-
-/* ===============================
-   MODAL
-   =============================== */
-body#index #infoModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.65);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-body#index #infoModal.hidden {
-  display: none;
-}
-
-body#index #infoModal .modal-content {
-  background: var(--gris);
-  width: 90%;
-  max-width: 520px;
-  padding: 32px;
-  border-radius: 12px;
-  text-align: center;
-  color: var(--blanco) !important;
-  position: relative;
-  animation: fadeIn 0.3s ease;
-}
-
-body#index #infoModal .close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 28px;
-  cursor: pointer;
-  color: var(--gris-claro);
-}
-
-/* Imagen del modal */
-body#index .modal-image {
-  width: 100%;
-  height: 260px;
-  background: var(--gris-oscuro);
-  border-radius: 8px;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
-
-body#index .modal-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Botón dentro del modal */
-body#index #btnGoRegister {
-  margin-top: 20px;
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: var(--color-primario);
-  border: none;
-  color: white;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-body#index #btnGoRegister:hover {
-  background: var(--color-primario-hover);
-}
-
-.hidden {
-  display: none !important;
-}
-
-
-
-/* ============================ */
-/* 🔹 ESTILOS EXCLUSIVOS LOGIN  */
-/* ============================ */
-
-#login {
-  background: #0e0e0e;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #e0e0e0;
-  font-family: "Inter", sans-serif;
-}
-
-#login .login-container {
-  background: #1a1a1a;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  width: 330px;
-  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
-  text-align: center;
-}
-
-#login h2 {
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-  font-size: 1.7rem;
-  font-weight: 600;
-}
-
-#login input {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #0f0f0f;
-  color: #fff;
-  font-size: 0.95rem;
-}
-
-#login input::placeholder {
-  color: #888;
-}
-
-#login .btn-login {
-  width: 100%;
-  background: #007bff;
-  border: none;
-  padding: 0.8rem;
-  margin-top: 0.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-#login .btn-login:hover {
-  background: #005fcc;
-}
-
-#login p {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-#login a {
-  color: #66aaff;
-  text-decoration: underline;
-}
-
-#login a:hover {
-  color: #99c7ff;
-}
-
-/* ================================
-   REGISTER PAGE (body.auth#register)
-   ================================ */
-
-body.auth#register {
-  background-color: #0d0d0d;
-  color: #e0e0e0;
-  font-family: "Inter", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* Contenedor del formulario */
-body.auth#register .form-container {
-  background-color: #1a1a1a;
-  padding: 28px;
-  border-radius: 12px;
-  width: 340px;
-  text-align: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
-}
-
-/* Título */
-body.auth#register .form-container h2 {
-  margin-bottom: 20px;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-/* Inputs */
-body.auth#register .form-container input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 14px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background-color: #262626;
-  color: #ffffff;
-  font-size: 14px;
-}
-
-/* Inputs placeholder */
-body.auth#register .form-container input::placeholder {
-  color: #aaaaaa;
-}
-
-/* Botón principal */
-body.auth#register #btnRegistro {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: #005eff;
-  border: none;
-  cursor: pointer;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 15px;
-  transition: 0.25s;
-}
-
-body.auth#register #btnRegistro:hover {
-  background-color: #0a6cff;
-  transform: translateY(-1px);
-}
-
-/* Texto debajo del botón */
-body.auth#register .form-container p {
-  margin-top: 12px;
-  color: #cfcfcf;
-  font-size: 14px;
-}
-
-/* Link */
-body.auth#register .form-container a {
-  color: #3b82f6;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-body.auth#register .form-container a:hover {
-  text-decoration: underline;
-}
-
-/* ===============================
-   RESPONSIVE
-   =============================== */
-
-@media (max-width: 900px) {
-  body#index .index-options {
-    grid-template-columns: 1fr;
-    padding: 20px;
-  }
-}
-
-/* Botones de movimiento */
-.btn-move {
-  position: relative;
-  cursor: pointer;
-  background: #ddd;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 18px;
-  transition: transform 0.3s ease;
-}
-
-.btn-move.derecha {
-  transform: translateX(40px);
-}
-
-.btn-move.izquierda {
-  transform: translateX(-40px);
 }

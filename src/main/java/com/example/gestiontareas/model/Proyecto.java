@@ -2,6 +2,8 @@ package com.example.gestiontareas.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +27,7 @@ public class Proyecto {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Tarea> tareas;
 
 	public Long getId() {

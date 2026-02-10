@@ -17,7 +17,7 @@
     </div>
 
     <ul class="nav-list">
-      <li class="nav-item active" id="navProyectos">📊 Proyectos</li>
+      <li class="nav-item active">📊 Proyectos</li>
       <li class="nav-item" id="navRecursos">🔧 Recursos</li>
       <li class="nav-item" id="btnAbrirProyecto">➕ Crear Proyecto</li>
       <li class="nav-item" id="btnAbrirRecurso">➕ Crear Recurso</li>
@@ -31,36 +31,48 @@
 
   <!-- MAIN -->
   <main class="main">
+
+    <!-- TOPBAR -->
     <div class="topbar">
-      <h2 id="topbarTitle">Gestión de Proyectos</h2>
+      <h2>Gestión de Proyectos</h2>
     </div>
 
-	<section class="content content-proyectos">
+    <!-- CONTENIDO PROYECTOS -->
+    <section class="content-proyectos">
 
-	  <!-- STATS -->
-	  <div class="stats-row">
-	    <div class="stats-grid">
-	      <div class="stat-card">
-	        <div class="stat-label">Proyectos</div>
-	        <div class="stat-value" id="statProyectos">0</div>
-	      </div>
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Proyectos</div>
+          <div class="stat-value" id="statProyectos">0</div>
+        </div>
 
-	      <div class="stat-card stat-card-primario">
-	        <div class="stat-label">Tareas en proceso</div>
-	        <div class="stat-value" id="statProceso">0</div>
-	      </div>
+        <div class="stat-card stat-card-primario">
+          <div class="stat-label">Tareas en proceso</div>
+          <div class="stat-value" id="statProceso">0</div>
+        </div>
 
-	      <div class="stat-card">
-	        <div class="stat-label">Tareas completadas</div>
-	        <div class="stat-value stat-value-verde" id="statCompletadas">0</div>
-	      </div>
-	    </div>
-	  </div>
+        <div class="stat-card">
+          <div class="stat-label">Tareas completadas</div>
+          <div class="stat-value stat-value-verde" id="statCompletadas">0</div>
+        </div>
+      </div>
 
-	  <!-- LISTADO PROYECTOS -->
-	  <div class="proyectos-list" id="proyectosGrid"></div>
+      <!-- LISTADO -->
+      <div class="proyectos-grid" id="proyectosGrid">
+        <!-- tarjetas dinámicas -->
+      </div>
 
-	</section>
+      <!-- ESTADO VACÍO -->
+      <div id="emptyStateProyectos" class="empty-state hidden">
+        <h3>📭 No tenés proyectos aún</h3>
+        <p>Creá tu primer proyecto para empezar a organizar tareas</p>
+        <button class="btn" id="btnCrearPrimerProyecto">
+          ➕ Crear Proyecto
+        </button>
+      </div>
+
+    </section>
   </main>
 </div>
 

@@ -4,7 +4,6 @@ const API = "http://localhost:8080/api";
 /* ================= AUTH ================= */
 const token = localStorage.getItem("token");
 const usuarioEmail = localStorage.getItem("usuarioEmail");
-const usuarioNombre = localStorage.getItem("usuarioNombre");
 
 if (!token || token.split(".").length !== 3) {
   localStorage.clear();
@@ -18,27 +17,21 @@ function authHeaders() {
   };
 }
 
-/* ================= PROYECTO CONTEXTO (FIX CLAVE) ================= */
+/* ================= PROYECTO CONTEXTO ================= */
 const params = new URLSearchParams(window.location.search);
-let proyectoId = params.get("proyectoId");
-
-// fallback seguro (evita perder el proyecto al enviar formularios)
-if (!proyectoId) {
-  proyectoId = localStorage.getItem("proyectoIdActual");
-}
+let proyectoId = params.get("proyectoId") || localStorage.getItem("proyectoIdActual");
 
 if (!proyectoId) {
   alert("Proyecto no especificado");
   window.location.href = "proyectos.html";
 }
 
-// persistimos el contexto del proyecto
 localStorage.setItem("proyectoIdActual", proyectoId);
 
 /* ================= USER INFO ================= */
-const userInfoEl = document.getElementById("userInfo");
+const userInfoEl = document.getElementById("userEmail");
 if (userInfoEl) {
-  userInfoEl.innerText = `${usuarioNombre} — ${usuarioEmail}`;
+  userInfoEl.innerText = usuarioEmail || "—";
 }
 
 /* ================= LOGOUT ================= */
@@ -47,50 +40,55 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-/* ================= FETCH ================= */
-async function fetchProyecto() {
-  const res = await fetch(`${API}/proyectos/${proyectoId}`, {
-    headers: authHeaders()
-  });
-  if (!res.ok) throw new Error("Proyecto no encontrado");
-  return res.json();
+/* ================= MODAL TAREA ================= */
+const modalTarea = document.getElementById("modalTarea");
+const modalContentTarea = modalTarea.querySelector(".modal-content");
+const closeTarea = document.getElementById("closeTarea");
+
+function abrirModalTarea() {
+  modalTarea.classList.add("open");
 }
 
+function cerrarModalTarea() {
+  modalTarea.classList.remove("open");
+}
+
+// abrir desde sidebar
+document
+  .querySelector('[data-section="nueva-tarea"]')
+  .addEventListener("click", abrirModalTarea);
+
+// cerrar con X
+closeTarea.addEventListener("click", e => {
+  e.stopPropagation();
+  cerrarModalTarea();
+});
+
+// cerrar clic en el fondo (modal)
+modalTarea.addEventListener("click", cerrarModalTarea);
+
+// evitar cierre al clickear el contenido
+modalContentTarea.addEventListener("click", e => {
+  e.stopPropagation();
+});
+
+
+/* ================= FETCH ================= */
 async function fetchTareas() {
   const res = await fetch(`${API}/proyectos/${proyectoId}/tareas`, {
     headers: authHeaders()
   });
-  if (!res.ok) return [];
-  return res.json();
+  return res.ok ? res.json() : [];
 }
 
 async function fetchRecursos() {
   const res = await fetch(`${API}/recursos`, {
     headers: authHeaders()
   });
-  if (!res.ok) return [];
-  return res.json();
+  return res.ok ? res.json() : [];
 }
 
 /* ================= RENDER ================= */
-function renderProyecto(proyecto) {
-  document.getElementById("tituloProyecto").innerText = proyecto.nombre;
-  document.getElementById("descripcionProyecto").innerText =
-    proyecto.descripcion || "Sin descripción";
-}
-
-function renderRecursos(recursos) {
-  const select = document.getElementById("tareaRecursos");
-  select.innerHTML = "";
-
-  recursos.forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r.id;
-    opt.textContent = `${r.nombre} (${r.cantidad} ${r.unidadMedida})`;
-    select.appendChild(opt);
-  });
-}
-
 function renderTareas(listId, tareas) {
   const ul = document.getElementById(listId);
   ul.innerHTML = "";
@@ -101,7 +99,7 @@ function renderTareas(listId, tareas) {
     li.innerHTML = `
       <strong>${t.titulo}</strong><br>
       <span>${t.descripcion || "-"}</span><br>
-      <small>${t.fecha}</small><br>
+      <small>${t.fecha || ""}</small><br>
       <em>Recursos: ${
         t.recursos?.length
           ? t.recursos.map(r => r.nombre).join(", ")
@@ -112,6 +110,18 @@ function renderTareas(listId, tareas) {
       </div>
     `;
     ul.appendChild(li);
+  });
+}
+
+function renderRecursos(recursos) {
+  const select = document.getElementById("tareaRecursos");
+  select.innerHTML = "";
+
+  recursos.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.id;
+    opt.textContent = `${r.nombre} (${r.cantidad} ${r.unidad})`;
+    select.appendChild(opt);
   });
 }
 
@@ -126,7 +136,7 @@ function attachDeleteHandlers() {
         headers: authHeaders()
       });
 
-      await refreshAll();
+      refreshAll();
     };
   });
 }
@@ -139,83 +149,60 @@ document.getElementById("formTarea").addEventListener("submit", async e => {
   const descripcion = tareaDescripcion.value.trim();
   const fecha = tareaFecha.value;
 
-  const recursoIds = Array.from(
-    tareaRecursos.selectedOptions
-  ).map(o => Number(o.value));
-
   if (!titulo || !fecha) {
     alert("Completá título y fecha");
     return;
   }
 
-  // 1️⃣ Crear tarea en el proyecto actual
-  const res = await fetch(
-    `${API}/tareas/proyecto/${proyectoId}`,
-    {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({
-        titulo,
-        descripcion,
-        fecha
-      })
-    }
-  );
+  const res = await fetch(`${API}/tareas/proyecto/${proyectoId}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ titulo, descripcion, fecha })
+  });
 
   if (!res.ok) {
     alert("Error al crear tarea");
     return;
   }
 
-  const tareaCreada = await res.json();
-
-  // 2️⃣ Asignar recursos
-  for (const recursoId of recursoIds) {
-    await fetch(
-      `${API}/tareas/${tareaCreada.id}/recursos/${recursoId}`,
-      {
-        method: "POST",
-        headers: authHeaders()
-      }
-    );
-  }
-
   e.target.reset();
-  await refreshAll();
+  cerrarModalTarea();
+  refreshAll();
 });
 
 /* ================= OVERVIEW ================= */
 function updateStats(tareas) {
-  const creadas = tareas.filter(t => t.estado === "CREADA");
-  const proceso = tareas.filter(t => t.estado === "EN_PROCESO");
-  const terminadas = tareas.filter(t => t.estado === "TERMINADA");
-
-  statCreadas.innerText = creadas.length;
-  statProceso.innerText = proceso.length;
-  statTerminadas.innerText = terminadas.length;
-
-  renderTareas("listaTareasCreadas", creadas);
-  renderTareas("listaTareasEnProceso", proceso);
-  renderTareas("listaTareasTerminadas", terminadas);
+  renderTareas(
+    "listaTareasCreadas",
+    tareas.filter(t => t.estado === "PENDIENTE")
+  );
+  renderTareas(
+    "listaTareasEnProceso",
+    tareas.filter(t => t.estado === "EN_PROCESO")
+  );
+  renderTareas(
+    "listaTareasTerminadas",
+    tareas.filter(t => t.estado === "TERMINADA")
+  );
 
   attachDeleteHandlers();
+
+  if (tareas.length === 0) abrirModalTarea();
 }
 
 /* ================= REFRESH ================= */
 async function refreshAll() {
-  const [proyecto, tareas, recursos] = await Promise.all([
-    fetchProyecto(),
+  const [tareas, recursos] = await Promise.all([
     fetchTareas(),
     fetchRecursos()
   ]);
 
-  renderProyecto(proyecto);
   renderRecursos(recursos);
   updateStats(tareas);
 }
 
 /* ================= INIT ================= */
-(async function init() {
+(() => {
   tareaFecha.value = new Date().toISOString().slice(0, 10);
-  await refreshAll();
+  refreshAll();
 })();
