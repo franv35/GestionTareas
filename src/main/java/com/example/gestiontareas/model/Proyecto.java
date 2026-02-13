@@ -12,8 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
+
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,7 @@ public class Proyecto {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL)
