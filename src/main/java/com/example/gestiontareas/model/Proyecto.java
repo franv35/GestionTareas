@@ -22,7 +22,8 @@ public class Proyecto {
 
     private String nombre;
     private String descripcion;
-
+    private String estado = "ACTIVO";
+    
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     @JsonIgnore
@@ -71,6 +72,11 @@ public class Proyecto {
 	public void setTareas(List<Tarea> tareas) {
 		this.tareas = tareas;
 	}
+
+	public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+		
+	}
     
     
-}
+

@@ -18,4 +18,7 @@ public interface ProyectoService {
     void eliminarProyecto(Long id);
 
     List<Tarea> obtenerTareas(Long proyectoId);
+    
+    Proyecto marcarComoTerminado(Long id);
+
 }

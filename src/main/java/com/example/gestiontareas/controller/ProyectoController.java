@@ -61,4 +61,10 @@ public class ProyectoController {
     public ResponseEntity<List<Tarea>> obtenerTareas(@PathVariable Long id) {
         return ResponseEntity.ok(proyectoService.obtenerTareas(id));
     }
+    
+    @PutMapping("/{id}/terminar")
+    public ResponseEntity<Proyecto> terminarProyecto(@PathVariable Long id) {
+        return ResponseEntity.ok(proyectoService.marcarComoTerminado(id));
+    }
+
 }

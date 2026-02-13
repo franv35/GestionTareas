@@ -73,4 +73,12 @@ public class ProyectoServiceImpl implements ProyectoService {
     public List<Tarea> obtenerTareas(Long proyectoId) {
         return tareaRepository.findByProyectoId(proyectoId);
     }
+    
+    @Override
+    public Proyecto marcarComoTerminado(Long id) {
+        Proyecto proyecto = obtenerProyecto(id);
+        proyecto.setEstado("TERMINADO");
+        return proyectoRepository.save(proyecto);
+    }
+
 }

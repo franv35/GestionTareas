@@ -101,7 +101,11 @@ async function cargarProyectos() {
 
     if (!res.ok) throw new Error("Error auth");
 
-    const proyectos = await res.json();
+    let proyectos = await res.json();
+
+    if (!Array.isArray(proyectos)) {
+      proyectos = [];
+    }
 
     proyectosGrid.innerHTML = "";
     statProyectos.innerText = proyectos.length;
@@ -133,6 +137,7 @@ async function cargarProyectos() {
 
     // 🔹 CON proyectos
     proyectos.forEach(p => {
+
       if (Array.isArray(p.tareas)) {
         p.tareas.forEach(t => {
           if (t.estado === "EN_PROCESO") enProceso++;
@@ -144,12 +149,20 @@ async function cargarProyectos() {
       card.className = "proyecto-card";
 
       card.innerHTML = `
-        <h3>
-          <a href="dashboard.html?proyectoId=${p.id}" class="proyecto-link">
-            ${p.nombre}
-          </a>
-        </h3>
+        <h3>${p.nombre}</h3>
         <p>${p.descripcion || "Sin descripción"}</p>
+
+        ${p.estado === "TERMINADO" 
+          ? "<p style='color:#2e7d32;font-weight:bold;'>Proyecto terminado</p>" 
+          : ""}
+
+        <div class="proyecto-actions">
+          <button class="btn-editar" data-id="${p.id}">✏ Editar</button>
+          <button class="btn-eliminar" data-id="${p.id}">🗑 Eliminar</button>
+          ${p.estado !== "TERMINADO"
+            ? `<button class="btn-terminar" data-id="${p.id}">✅ Terminar</button>`
+            : ""}
+        </div>
       `;
 
       proyectosGrid.appendChild(card);
@@ -157,6 +170,70 @@ async function cargarProyectos() {
 
     statProceso.innerText = enProceso;
     statCompletadas.innerText = completadas;
+
+    // 🔥 ELIMINAR
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+
+        if (!confirm("¿Eliminar proyecto?")) return;
+
+        await fetch(`${API}/proyectos/${id}`, {
+          method: "DELETE",
+          headers: authHeaders()
+        });
+
+        cargarProyectos();
+      });
+    });
+
+    // 🔥 EDITAR
+    document.querySelectorAll(".btn-editar").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+
+        const res = await fetch(`${API}/proyectos/${id}`, {
+          headers: authHeaders()
+        });
+
+        const proyecto = await res.json();
+
+        proyectoNombre.value = proyecto.nombre;
+        proyectoDescripcion.value = proyecto.descripcion || "";
+
+        formProyecto.onsubmit = async (e) => {
+          e.preventDefault();
+
+          await fetch(`${API}/proyectos/${id}`, {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({
+              nombre: proyectoNombre.value,
+              descripcion: proyectoDescripcion.value
+            })
+          });
+
+          modalProyecto.classList.add("hidden");
+          cargarProyectos();
+        };
+
+        modalProyecto.classList.remove("hidden");
+      });
+    });
+
+    // 🔥 TERMINAR
+    document.querySelectorAll(".btn-terminar").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+
+        await fetch(`${API}/proyectos/${id}/terminar`, {
+          method: "PUT",
+          headers: authHeaders()
+        });
+
+        cargarProyectos();
+      });
+    });
 
   } catch (err) {
     console.error(err);

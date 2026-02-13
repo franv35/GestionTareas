@@ -308,5 +308,25 @@ button:hover {
 
   .main {
     padding: 1rem;
-  }
+  } 
+  
+  .proyecto-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-editar {
+  background-color: #ffc107;
+  color: black;
+}
+
+.btn-eliminar {
+  background-color: #c62828;
+}
+
+.btn-terminar {
+  background-color: #2e7d32;
+}
+
 }
