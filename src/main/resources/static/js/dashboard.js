@@ -1,7 +1,11 @@
-/* ================= CONFIG ================= */
+/* ======================================================
+   CONFIG
+====================================================== */
 const API = "http://localhost:8080/api";
 
-/* ================= AUTH ================= */
+/* ======================================================
+   AUTH
+====================================================== */
 const token = localStorage.getItem("token");
 const usuarioEmail = localStorage.getItem("usuarioEmail");
 
@@ -17,9 +21,13 @@ function authHeaders() {
   };
 }
 
-/* ================= PROYECTO CONTEXTO ================= */
+/* ======================================================
+   PROYECTO CONTEXTO
+====================================================== */
 const params = new URLSearchParams(window.location.search);
-let proyectoId = params.get("proyectoId") || localStorage.getItem("proyectoIdActual");
+let proyectoId =
+  params.get("proyectoId") ||
+  localStorage.getItem("proyectoIdActual");
 
 if (!proyectoId) {
   alert("Proyecto no especificado");
@@ -28,23 +36,42 @@ if (!proyectoId) {
 
 localStorage.setItem("proyectoIdActual", proyectoId);
 
-/* ================= USER INFO ================= */
+/* ======================================================
+   ELEMENTOS DOM
+====================================================== */
 const userInfoEl = document.getElementById("userEmail");
-if (userInfoEl) {
-  userInfoEl.innerText = usuarioEmail || "—";
-}
+const logoutBtn = document.getElementById("logoutBtn");
 
-/* ================= LOGOUT ================= */
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.clear();
-  window.location.href = "login.html";
-});
-
-/* ================= MODAL TAREA ================= */
 const modalTarea = document.getElementById("modalTarea");
 const modalContentTarea = modalTarea.querySelector(".modal-content");
 const closeTarea = document.getElementById("closeTarea");
 
+const formTarea = document.getElementById("formTarea");
+
+const listaPendientes = document.getElementById("listaTareasCreadas");
+const listaEnProceso = document.getElementById("listaTareasEnProceso");
+const listaTerminadas = document.getElementById("listaTareasTerminadas");
+
+const selectRecursos = document.getElementById("tareaRecursos");
+
+/* ======================================================
+   USER INFO
+====================================================== */
+if (userInfoEl) {
+  userInfoEl.innerText = usuarioEmail || "—";
+}
+
+/* ======================================================
+   LOGOUT
+====================================================== */
+logoutBtn?.addEventListener("click", () => {
+  localStorage.clear();
+  window.location.href = "login.html";
+});
+
+/* ======================================================
+   MODAL TAREA
+====================================================== */
 function abrirModalTarea() {
   modalTarea.classList.add("open");
 }
@@ -53,49 +80,61 @@ function cerrarModalTarea() {
   modalTarea.classList.remove("open");
 }
 
-// abrir desde sidebar
+// Abrir desde sidebar
 document
   .querySelector('[data-section="nueva-tarea"]')
-  .addEventListener("click", abrirModalTarea);
+  ?.addEventListener("click", abrirModalTarea);
 
-// cerrar con X
-closeTarea.addEventListener("click", e => {
+// Cerrar con X
+closeTarea?.addEventListener("click", e => {
   e.stopPropagation();
   cerrarModalTarea();
 });
 
-// cerrar clic en el fondo (modal)
-modalTarea.addEventListener("click", cerrarModalTarea);
+// Cerrar clic en fondo
+modalTarea?.addEventListener("click", cerrarModalTarea);
 
-// evitar cierre al clickear el contenido
-modalContentTarea.addEventListener("click", e => {
+// Evitar cierre al clickear contenido
+modalContentTarea?.addEventListener("click", e => {
   e.stopPropagation();
 });
 
-
-/* ================= FETCH ================= */
+/* ======================================================
+   FETCH
+====================================================== */
 async function fetchTareas() {
-  const res = await fetch(`${API}/proyectos/${proyectoId}/tareas`, {
-    headers: authHeaders()
-  });
-  return res.ok ? res.json() : [];
+  try {
+    const res = await fetch(
+      `${API}/proyectos/${proyectoId}/tareas`,
+      { headers: authHeaders() }
+    );
+    return res.ok ? await res.json() : [];
+  } catch {
+    return [];
+  }
 }
 
 async function fetchRecursos() {
-  const res = await fetch(`${API}/recursos`, {
-    headers: authHeaders()
-  });
-  return res.ok ? res.json() : [];
+  try {
+    const res = await fetch(`${API}/recursos`, {
+      headers: authHeaders()
+    });
+    return res.ok ? await res.json() : [];
+  } catch {
+    return [];
+  }
 }
 
-/* ================= RENDER ================= */
-function renderTareas(listId, tareas) {
-  const ul = document.getElementById(listId);
-  ul.innerHTML = "";
+/* ======================================================
+   RENDER TAREAS
+====================================================== */
+function renderTareas(listaEl, tareas) {
+  listaEl.innerHTML = "";
 
   tareas.forEach(t => {
     const li = document.createElement("li");
     li.className = "tarea-card";
+
     li.innerHTML = `
       <strong>${t.titulo}</strong><br>
       <span>${t.descripcion || "-"}</span><br>
@@ -106,26 +145,42 @@ function renderTareas(listId, tareas) {
           : "—"
       }</em>
       <div class="actions">
-        <button class="btn-delete" data-id="${t.id}">Eliminar</button>
+        <button class="btn-delete" data-id="${t.id}">
+          Eliminar
+        </button>
       </div>
     `;
-    ul.appendChild(li);
+
+    listaEl.appendChild(li);
   });
 }
 
+/* ======================================================
+   RENDER RECURSOS
+====================================================== */
 function renderRecursos(recursos) {
-  const select = document.getElementById("tareaRecursos");
-  select.innerHTML = "";
+  selectRecursos.innerHTML = "";
+
+  if (!recursos.length) {
+    const opt = document.createElement("option");
+    opt.textContent = "No hay recursos creados";
+    opt.disabled = true;
+    opt.selected = true;
+    selectRecursos.appendChild(opt);
+    return;
+  }
 
   recursos.forEach(r => {
     const opt = document.createElement("option");
     opt.value = r.id;
     opt.textContent = `${r.nombre} (${r.cantidad} ${r.unidad})`;
-    select.appendChild(opt);
+    selectRecursos.appendChild(opt);
   });
 }
 
-/* ================= DELETE ================= */
+/* ======================================================
+   DELETE TAREA
+====================================================== */
 function attachDeleteHandlers() {
   document.querySelectorAll(".btn-delete").forEach(btn => {
     btn.onclick = async () => {
@@ -141,8 +196,30 @@ function attachDeleteHandlers() {
   });
 }
 
-/* ================= CREATE TAREA ================= */
-document.getElementById("formTarea").addEventListener("submit", async e => {
+/* ======================================================
+   EMPTY STATE
+====================================================== */
+function renderEmptyStateSiCorresponde(tareas) {
+  if (tareas.length !== 0) return;
+
+  listaPendientes.innerHTML = `
+    <div class="empty-state">
+      <p>No hay tareas aún.</p>
+      <button class="btn" id="btnCrearPrimeraTarea">
+        Crear mi primera tarea
+      </button>
+    </div>
+  `;
+
+  document
+    .getElementById("btnCrearPrimeraTarea")
+    ?.addEventListener("click", abrirModalTarea);
+}
+
+/* ======================================================
+   CREATE TAREA
+====================================================== */
+formTarea?.addEventListener("submit", async e => {
   e.preventDefault();
 
   const titulo = tareaTitulo.value.trim();
@@ -154,55 +231,53 @@ document.getElementById("formTarea").addEventListener("submit", async e => {
     return;
   }
 
-  const res = await fetch(`${API}/tareas/proyecto/${proyectoId}`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify({ titulo, descripcion, fecha })
-  });
+  const res = await fetch(
+    `${API}/tareas/proyecto/${proyectoId}`,
+    {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ titulo, descripcion, fecha })
+    }
+  );
 
   if (!res.ok) {
     alert("Error al crear tarea");
     return;
   }
 
-  e.target.reset();
+  formTarea.reset();
   cerrarModalTarea();
   refreshAll();
 });
 
-/* ================= OVERVIEW ================= */
-function updateStats(tareas) {
-  renderTareas(
-    "listaTareasCreadas",
-    tareas.filter(t => t.estado === "PENDIENTE")
-  );
-  renderTareas(
-    "listaTareasEnProceso",
-    tareas.filter(t => t.estado === "EN_PROCESO")
-  );
-  renderTareas(
-    "listaTareasTerminadas",
-    tareas.filter(t => t.estado === "TERMINADA")
-  );
-
-  attachDeleteHandlers();
-
-  if (tareas.length === 0) abrirModalTarea();
-}
-
-/* ================= REFRESH ================= */
+/* ======================================================
+   REFRESH
+====================================================== */
 async function refreshAll() {
   const [tareas, recursos] = await Promise.all([
     fetchTareas(),
     fetchRecursos()
   ]);
 
+  const pendientes = tareas.filter(t => t.estado === "PENDIENTE");
+  const enProceso = tareas.filter(t => t.estado === "EN_PROCESO");
+  const terminadas = tareas.filter(t => t.estado === "TERMINADA");
+
+  renderTareas(listaPendientes, pendientes);
+  renderTareas(listaEnProceso, enProceso);
+  renderTareas(listaTerminadas, terminadas);
+
   renderRecursos(recursos);
-  updateStats(tareas);
+  attachDeleteHandlers();
+  renderEmptyStateSiCorresponde(tareas);
 }
 
-/* ================= INIT ================= */
+/* ======================================================
+   INIT
+====================================================== */
 (() => {
-  tareaFecha.value = new Date().toISOString().slice(0, 10);
+  if (typeof tareaFecha !== "undefined") {
+    tareaFecha.value = new Date().toISOString().slice(0, 10);
+  }
   refreshAll();
 })();

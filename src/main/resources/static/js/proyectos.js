@@ -36,23 +36,19 @@ if (userInfo) {
 ====================================================== */
 const proyectosGrid = document.getElementById("proyectosGrid");
 
-// Stats
 const statProyectos = document.getElementById("statProyectos");
 const statProceso = document.getElementById("statProceso");
 const statCompletadas = document.getElementById("statCompletadas");
 
-// Modales
 const modalProyecto = document.getElementById("modalProyecto");
 const modalRecurso = document.getElementById("modalRecurso");
 
-// Botones
 const btnAbrirProyecto = document.getElementById("btnAbrirProyecto");
 const btnAbrirRecurso = document.getElementById("btnAbrirRecurso");
 const cerrarProyecto = document.getElementById("cerrarProyecto");
 const cerrarRecurso = document.getElementById("cerrarRecurso");
 const logoutBtn = document.getElementById("logoutBtn");
 
-// Forms
 const formProyecto = document.getElementById("formProyecto");
 const formRecurso = document.getElementById("formRecurso");
 
@@ -75,7 +71,6 @@ cerrarRecurso?.addEventListener("click", () => {
   modalRecurso.classList.add("hidden");
 });
 
-// click fuera
 window.addEventListener("click", e => {
   if (e.target === modalProyecto) modalProyecto.classList.add("hidden");
   if (e.target === modalRecurso) modalRecurso.classList.add("hidden");
@@ -102,10 +97,7 @@ async function cargarProyectos() {
     if (!res.ok) throw new Error("Error auth");
 
     let proyectos = await res.json();
-
-    if (!Array.isArray(proyectos)) {
-      proyectos = [];
-    }
+    if (!Array.isArray(proyectos)) proyectos = [];
 
     proyectosGrid.innerHTML = "";
     statProyectos.innerText = proyectos.length;
@@ -113,7 +105,7 @@ async function cargarProyectos() {
     let enProceso = 0;
     let completadas = 0;
 
-    // 🔹 SIN proyectos
+    /* ---------- SIN PROYECTOS ---------- */
     if (proyectos.length === 0) {
       proyectosGrid.innerHTML = `
         <div class="empty-state">
@@ -135,7 +127,7 @@ async function cargarProyectos() {
       return;
     }
 
-    // 🔹 CON proyectos
+    /* ---------- CON PROYECTOS ---------- */
     proyectos.forEach(p => {
 
       if (Array.isArray(p.tareas)) {
@@ -149,11 +141,16 @@ async function cargarProyectos() {
       card.className = "proyecto-card";
 
       card.innerHTML = `
-        <h3>${p.nombre}</h3>
+        <h3>
+          <a href="dashboard.html?proyectoId=${p.id}" class="proyecto-link">
+            ${p.nombre}
+          </a>
+        </h3>
+
         <p>${p.descripcion || "Sin descripción"}</p>
 
-        ${p.estado === "TERMINADO" 
-          ? "<p style='color:#2e7d32;font-weight:bold;'>Proyecto terminado</p>" 
+        ${p.estado === "TERMINADO"
+          ? "<p style='color:#2e7d32;font-weight:bold;'>Proyecto terminado</p>"
           : ""}
 
         <div class="proyecto-actions">
@@ -171,11 +168,10 @@ async function cargarProyectos() {
     statProceso.innerText = enProceso;
     statCompletadas.innerText = completadas;
 
-    // 🔥 ELIMINAR
+    /* ---------- ELIMINAR ---------- */
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
-
         if (!confirm("¿Eliminar proyecto?")) return;
 
         await fetch(`${API}/proyectos/${id}`, {
@@ -187,7 +183,7 @@ async function cargarProyectos() {
       });
     });
 
-    // 🔥 EDITAR
+    /* ---------- EDITAR ---------- */
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -221,7 +217,7 @@ async function cargarProyectos() {
       });
     });
 
-    // 🔥 TERMINAR
+    /* ---------- TERMINAR ---------- */
     document.querySelectorAll(".btn-terminar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
