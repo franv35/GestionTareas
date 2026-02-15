@@ -55,26 +55,36 @@ const formRecurso = document.getElementById("formRecurso");
 /* ======================================================
    MODALES
 ====================================================== */
+
+function abrirModal(modal) {
+  modal?.classList.add("open");
+}
+
+function cerrarModal(modal) {
+  modal?.classList.remove("open");
+}
+
 btnAbrirProyecto?.addEventListener("click", () => {
-  modalProyecto.classList.remove("hidden");
+  abrirModal(modalProyecto);
 });
 
 btnAbrirRecurso?.addEventListener("click", () => {
-  modalRecurso.classList.remove("hidden");
+  abrirModal(modalRecurso);
 });
 
 cerrarProyecto?.addEventListener("click", () => {
-  modalProyecto.classList.add("hidden");
+  cerrarModal(modalProyecto);
 });
 
 cerrarRecurso?.addEventListener("click", () => {
-  modalRecurso.classList.add("hidden");
+  cerrarModal(modalRecurso);
 });
 
 window.addEventListener("click", e => {
-  if (e.target === modalProyecto) modalProyecto.classList.add("hidden");
-  if (e.target === modalRecurso) modalRecurso.classList.add("hidden");
+  if (e.target === modalProyecto) cerrarModal(modalProyecto);
+  if (e.target === modalRecurso) cerrarModal(modalRecurso);
 });
+
 
 /* ======================================================
    LOGOUT

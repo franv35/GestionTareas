@@ -263,9 +263,10 @@ button:hover {
   z-index: 1000;
 }
 
-.modal:not(.hidden) {
+.modal.open {
   display: flex;
 }
+
 
 .modal-content {
   background-color: var(--gris-oscuro);
