@@ -217,6 +217,78 @@ body {
 }
 
 /* ======================================================
+   TABLERO TAREAS (KANBAN)
+====================================================== */
+
+.board {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.tarea-column {
+  flex: 1;
+  background-color: var(--gris-oscuro);
+  padding: 1rem;
+  border-radius: 12px;
+  min-height: 400px;
+}
+
+.tarea-column h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+.tarea-column ul {
+  list-style: none;
+}
+
+.tarea-card {
+  background-color: var(--gris);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.tarea-card strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.tarea-card small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--gris-claro);
+}
+
+.actions {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.btn-move {
+  background-color: var(--color-primario);
+}
+
+.btn-complete {
+  background-color: var(--verde);
+}
+
+.btn-delete {
+  background-color: var(--rojo);
+}
+
+/* ======================================================
    BOTONES
 ====================================================== */
 button,

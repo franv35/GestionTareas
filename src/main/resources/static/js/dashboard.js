@@ -136,15 +136,37 @@ function renderTareas(listaEl, tareas) {
     li.className = "tarea-card";
 
     li.innerHTML = `
-      <strong>${t.titulo}</strong><br>
-      <span>${t.descripcion || "-"}</span><br>
-      <small>${t.fecha || ""}</small><br>
+      <strong>${t.titulo}</strong>
+      <span>${t.descripcion || "-"}</span>
+      <small>${t.fecha || ""}</small>
       <em>Recursos: ${
         t.recursos?.length
           ? t.recursos.map(r => r.nombre).join(", ")
           : "—"
       }</em>
+
       <div class="actions">
+        ${t.estado === "PENDIENTE" 
+          ? `<button class="btn-move" data-id="${t.id}" data-estado="EN_PROCESO">
+               Iniciar
+             </button>`
+          : ""
+        }
+
+        ${t.estado === "EN_PROCESO"
+          ? `<button class="btn-complete" data-id="${t.id}" data-estado="TERMINADA">
+               Finalizar
+             </button>`
+          : ""
+        }
+
+        ${t.estado === "EN_PROCESO"
+          ? `<button class="btn-move" data-id="${t.id}" data-estado="PENDIENTE">
+               Volver
+             </button>`
+          : ""
+        }
+
         <button class="btn-delete" data-id="${t.id}">
           Eliminar
         </button>
@@ -196,6 +218,23 @@ function attachDeleteHandlers() {
   });
 }
 
+function attachMoveHandlers() {
+  document.querySelectorAll(".btn-move, .btn-complete")
+    .forEach(btn => {
+      btn.onclick = async () => {
+        await fetch(
+          `${API}/tareas/${btn.dataset.id}/estado`,
+          {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({ estado: btn.dataset.estado })
+          }
+        );
+
+        refreshAll();
+      };
+    });
+}
 /* ======================================================
    EMPTY STATE
 ====================================================== */
@@ -255,7 +294,7 @@ formTarea?.addEventListener("submit", async e => {
 ====================================================== */
 async function refreshAll() {
   const [tareas, recursos] = await Promise.all([
-    fetchTareas(),
+	fetchTareas(),
     fetchRecursos()
   ]);
 
@@ -269,6 +308,7 @@ async function refreshAll() {
 
   renderRecursos(recursos);
   attachDeleteHandlers();
+  attachMoveHandlers(),
   renderEmptyStateSiCorresponde(tareas);
 }
 
