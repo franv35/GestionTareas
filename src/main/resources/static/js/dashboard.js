@@ -146,26 +146,26 @@ function renderTareas(listaEl, tareas) {
       }</em>
 
       <div class="actions">
-        ${t.estado === "PENDIENTE" 
-          ? `<button class="btn-move" data-id="${t.id}" data-estado="EN_PROCESO">
-               Iniciar
-             </button>`
-          : ""
-        }
+	  	${t.estado === "PENDIENTE" 
+	  	  ? `<button class="btn-move" data-id="${t.id}" data-estado="EN_PROGRESO">
+	  	       Iniciar
+	 	      </button>`
+	 	   : ""
+	 	 }
 
-        ${t.estado === "EN_PROCESO"
-          ? `<button class="btn-complete" data-id="${t.id}" data-estado="TERMINADA">
-               Finalizar
-             </button>`
-          : ""
-        }
+	 	 ${t.estado === "EN_PROGRESO"
+	 	   ? `<button class="btn-complete" data-id="${t.id}" data-estado="COMPLETADA">
+	  	       Finalizar
+	  	     </button>`
+	  	  : ""
+		  }
 
-        ${t.estado === "EN_PROCESO"
-          ? `<button class="btn-move" data-id="${t.id}" data-estado="PENDIENTE">
-               Volver
-             </button>`
-          : ""
-        }
+	 	 ${t.estado === "EN_PROGRESO"
+	  	  ? `<button class="btn-move" data-id="${t.id}" data-estado="PENDIENTE">
+	    	     Volver
+	   	    </button>`
+	  	  : ""
+	 	 }
 
         <button class="btn-delete" data-id="${t.id}">
           Eliminar
@@ -299,8 +299,8 @@ async function refreshAll() {
   ]);
 
   const pendientes = tareas.filter(t => t.estado === "PENDIENTE");
-  const enProceso = tareas.filter(t => t.estado === "EN_PROCESO");
-  const terminadas = tareas.filter(t => t.estado === "TERMINADA");
+  const enProceso = tareas.filter(t => t.estado === "EN_PROGRESO");
+  const terminadas = tareas.filter(t => t.estado === "COMPLETADA");
 
   renderTareas(listaPendientes, pendientes);
   renderTareas(listaEnProceso, enProceso);
