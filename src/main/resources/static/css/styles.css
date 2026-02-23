@@ -623,6 +623,67 @@ body.auth#register .form-container a:hover {
 }
 
 
+hero {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.highlight {
+  color: var(--color-primario);
+}
+
+.btn-hero {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  padding: 0.9rem 2rem;
+}
+
+.index-options {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  padding: 3rem 2rem;
+  flex-wrap: wrap;
+}
+
+.option-card {
+  background: var(--gris-oscuro);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 280px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.option-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* =========================================
+   MODAL IMAGE CONTROL
+========================================= */
+
+.modal-img-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+.modal-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* 🔥 Mantiene proporción y recorta */
+  display: block;
+}
+
+
 
 
 

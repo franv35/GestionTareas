@@ -3,53 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bienvenido a NotApp</title>
+  <title>NotApp | Organiza tu vida</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
 <body class="inicio" id="index">
-  <header>
-    <h1>Bienvenido a NotApp</h1>
-    <p>La forma más simple y eficiente de organizar tu vida.</p>
+
+  <header class="hero">
+    <h1>Organizá tu vida con <span class="highlight">NotApp</span></h1>
+    <p>Simple. Profesional. Eficiente.</p>
+    <button id="btnHeroRegister" class="btn btn-hero">
+      Crear cuenta gratis
+    </button>
   </header>
 
   <main class="index-options">
-    <!-- ESTUDIO -->
+
     <div class="option-card" data-option="estudio">
-      <h2>📚 Estudio</h2>
-      <p>Organizá materias, entregas, exámenes y recordatorios.</p>
-      <button class="btn-option">Ver más</button>
+      <div class="option-icon">📚</div>
+      <h2>Estudio</h2>
+      <p>Materias, entregas y exámenes bajo control.</p>
+      <button class="btn-option">Explorar</button>
     </div>
 
-    <!-- TRABAJO -->
     <div class="option-card" data-option="trabajo">
-      <h2>💼 Trabajo</h2>
-      <p>Gestioná proyectos, tareas y recursos de manera profesional.</p>
-      <button class="btn-option">Ver más</button>
+      <div class="option-icon">💼</div>
+      <h2>Trabajo</h2>
+      <p>Proyectos y tareas organizadas como un profesional.</p>
+      <button class="btn-option">Explorar</button>
     </div>
 
-    <!-- PERSONAL -->
     <div class="option-card" data-option="personal">
-      <h2>🏠 Personal</h2>
-      <p>Listas, ideas, compras, rutina: todo en un solo lugar.</p>
-      <button class="btn-option">Ver más</button>
+      <div class="option-icon">🏠</div>
+      <h2>Personal</h2>
+      <p>Ideas, listas y objetivos en un solo lugar.</p>
+      <button class="btn-option">Explorar</button>
     </div>
+
   </main>
 
-  <!-- MODAL GENERAL -->
+  <!-- MODAL -->
   <div id="infoModal" class="modal hidden">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
 
       <div class="modal-img-container">
-        <!-- IMAGEN CUADRADA - la completarás vos -->
         <img id="modalImg" src="" alt="imagen ilustrativa">
       </div>
 
       <h2 id="modalTitle"></h2>
       <p id="modalText"></p>
 
-      <button id="btnGoRegister" class="btn">Crear una cuenta</button>
+      <button id="btnGoRegister" class="btn">
+        Crear una cuenta
+      </button>
     </div>
   </div>
 
