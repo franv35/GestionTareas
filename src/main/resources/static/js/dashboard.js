@@ -53,7 +53,28 @@ const listaEnProceso = document.getElementById("listaTareasEnProceso");
 const listaTerminadas = document.getElementById("listaTareasTerminadas");
 
 const selectRecursos = document.getElementById("tareaRecursos");
+const countPendientes = document.getElementById("countPendientes");
+const countEnProceso = document.getElementById("countEnProceso");
+const countTerminadas = document.getElementById("countTerminadas");
 
+
+const modalRecursos = document.getElementById("modalRecursos");
+const closeRecursos = document.getElementById("closeRecursos");
+const listaRecursos = document.getElementById("listaRecursos");
+
+const openRecursosBtn = document.getElementById("openRecursos");
+const openCrearRecursoBtn = document.getElementById("openCrearRecurso");
+const btnCrearRecurso = document.getElementById("btnCrearRecurso");
+
+const recursoNombre = document.getElementById("recursoNombre");
+const recursoCantidad = document.getElementById("recursoCantidad");
+const recursoUnidad = document.getElementById("recursoUnidad");
+
+const statPendientes = document.getElementById("statPendientes");
+const statEnProceso = document.getElementById("statEnProceso");
+const statTerminadas = document.getElementById("statTerminadas");
+const statRecursos = document.getElementById("statRecursos");
+const statFechaInicio = document.getElementById("statFechaInicio");
 /* ======================================================
    USER INFO
 ====================================================== */
@@ -98,6 +119,32 @@ modalTarea?.addEventListener("click", cerrarModalTarea);
 modalContentTarea?.addEventListener("click", e => {
   e.stopPropagation();
 });
+
+
+/* ======================================================
+   MODAL RECURSOS
+====================================================== */
+
+function abrirModalRecursos() {
+  modalRecursos.classList.add("open");
+}
+
+function cerrarModalRecursos() {
+  modalRecursos.classList.remove("open");
+}
+
+openRecursosBtn?.addEventListener("click", async () => {
+  abrirModalRecursos();
+  const recursos = await fetchRecursos();
+  renderListaRecursos(recursos);
+});
+
+openCrearRecursoBtn?.addEventListener("click", abrirModalRecursos);
+
+closeRecursos?.addEventListener("click", cerrarModalRecursos);
+modalRecursos?.addEventListener("click", cerrarModalRecursos);
+modalRecursos?.querySelector(".modal-content")
+  ?.addEventListener("click", e => e.stopPropagation());
 
 /* ======================================================
    FETCH
@@ -200,6 +247,22 @@ function renderRecursos(recursos) {
   });
 }
 
+function renderListaRecursos(recursos) {
+  listaRecursos.innerHTML = "";
+
+  if (!recursos.length) {
+    listaRecursos.innerHTML = "<li>No hay recursos aún</li>";
+    return;
+  }
+
+  recursos.forEach(r => {
+    const li = document.createElement("li");
+    li.textContent = `${r.nombre} - ${r.cantidad} ${r.unidad}`;
+    listaRecursos.appendChild(li);
+  });
+}
+
+
 /* ======================================================
    DELETE TAREA
 ====================================================== */
@@ -289,12 +352,47 @@ formTarea?.addEventListener("submit", async e => {
   refreshAll();
 });
 
+
+/* ======================================================
+   CREATE RECURSO
+====================================================== */
+
+btnCrearRecurso?.addEventListener("click", async () => {
+  const nombre = recursoNombre.value.trim();
+  const cantidad = recursoCantidad.value;
+  const unidad = recursoUnidad.value.trim();
+
+  if (!nombre || !cantidad || !unidad) {
+    alert("Completá todos los campos");
+    return;
+  }
+
+  const res = await fetch(`${API}/recursos`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ nombre, cantidad, unidad })
+  });
+
+  if (!res.ok) {
+    alert("Error al crear recurso");
+    return;
+  }
+
+  recursoNombre.value = "";
+  recursoCantidad.value = "";
+  recursoUnidad.value = "";
+
+  const recursos = await fetchRecursos();
+  renderListaRecursos(recursos);
+  refreshAll();
+});
+
 /* ======================================================
    REFRESH
 ====================================================== */
 async function refreshAll() {
   const [tareas, recursos] = await Promise.all([
-	fetchTareas(),
+    fetchTareas(),
     fetchRecursos()
   ]);
 
@@ -302,13 +400,28 @@ async function refreshAll() {
   const enProceso = tareas.filter(t => t.estado === "EN_PROGRESO");
   const terminadas = tareas.filter(t => t.estado === "COMPLETADA");
 
+  // 🔥 ACTUALIZAR CONTADORES DEL TÍTULO
+  countPendientes.textContent = pendientes.length;
+  countEnProceso.textContent = enProceso.length;
+  countTerminadas.textContent = terminadas.length;
+
+  // 🔥 CONTADORES INFERIORES
+  statPendientes.textContent = pendientes.length;
+  statEnProceso.textContent = enProceso.length;
+  statTerminadas.textContent = terminadas.length;
+  statRecursos.textContent = recursos.length;
+
+  if (tareas.length && tareas[0].proyecto?.fechaInicio) {
+    statFechaInicio.textContent = tareas[0].proyecto.fechaInicio;
+  }
+
   renderTareas(listaPendientes, pendientes);
   renderTareas(listaEnProceso, enProceso);
   renderTareas(listaTerminadas, terminadas);
 
   renderRecursos(recursos);
   attachDeleteHandlers();
-  attachMoveHandlers(),
+  attachMoveHandlers();
   renderEmptyStateSiCorresponde(tareas);
 }
 
