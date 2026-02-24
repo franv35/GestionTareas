@@ -3,9 +3,11 @@ package com.example.gestiontareas.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,5 +41,19 @@ public class RecursoController {
     @GetMapping("/{id}")
     public ResponseEntity<RecursoResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(recursoService.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RecursoResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody RecursoRequest req) {
+
+        return ResponseEntity.ok(recursoService.update(id, req));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        recursoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

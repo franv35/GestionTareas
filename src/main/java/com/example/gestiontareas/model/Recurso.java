@@ -1,34 +1,72 @@
 package com.example.gestiontareas.model;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.*;
+
 @Entity
+@Table(name = "recurso")
 public class Recurso {
 
+    /* =========================
+       ID
+       ========================= */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /* =========================
+       ATRIBUTOS
+       ========================= */
+    @Column(nullable = false)
     private String nombre;
 
-    private int cantidad;
+    // Stock total cargado al proyecto
+    @Column(nullable = false)
+    private int stockTotal;
 
+    // Stock disponible para asignar
+    @Column(nullable = false)
+    private int stockDisponible;
+
+    @Column(nullable = false)
     private String unidad;
 
-    @ManyToMany(mappedBy = "recursos")
+    /* =========================
+       RELACIÓN CON PROYECTO
+       Muchos recursos → Un proyecto
+       ========================= */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proyecto_id", nullable = false)
     @JsonIgnore
-    private List<Tarea> tareas = new ArrayList<>();
+    private Proyecto proyecto;
 
-    /* ================= GETTERS & SETTERS ================= */
+    /* =========================
+       RELACIÓN CON TareaRecurso
+       Un recurso → Muchas asignaciones
+       ========================= */
+    @OneToMany(
+        mappedBy = "recurso",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    @JsonIgnore
+    private List<TareaRecurso> tareasAsignadas = new ArrayList<>();
+
+
+    /* =========================
+       GETTERS Y SETTERS
+       ========================= */
 
     public Long getId() {
         return id;
     }
 
+    // Opcional pero recomendado
     public void setId(Long id) {
         this.id = id;
     }
@@ -41,12 +79,20 @@ public class Recurso {
         this.nombre = nombre;
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public int getStockTotal() {
+        return stockTotal;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setStockTotal(int stockTotal) {
+        this.stockTotal = stockTotal;
+    }
+
+    public int getStockDisponible() {
+        return stockDisponible;
+    }
+
+    public void setStockDisponible(int stockDisponible) {
+        this.stockDisponible = stockDisponible;
     }
 
     public String getUnidad() {
@@ -57,11 +103,33 @@ public class Recurso {
         this.unidad = unidad;
     }
 
-    public List<Tarea> getTareas() {
-        return tareas;
+    public Proyecto getProyecto() {
+        return proyecto;
     }
 
-    public void setTareas(List<Tarea> tareas) {
-        this.tareas = tareas;
+    public void setProyecto(Proyecto proyecto) {
+        this.proyecto = proyecto;
+    }
+
+    public List<TareaRecurso> getTareasAsignadas() {
+        return tareasAsignadas;
+    }
+
+    public void setTareasAsignadas(List<TareaRecurso> tareasAsignadas) {
+        this.tareasAsignadas = tareasAsignadas;
+    }
+
+    /* =========================
+       MÉTODOS DE APOYO
+       ========================= */
+
+    public void agregarAsignacion(TareaRecurso asignacion) {
+        tareasAsignadas.add(asignacion);
+        asignacion.setRecurso(this);
+    }
+
+    public void removerAsignacion(TareaRecurso asignacion) {
+        tareasAsignadas.remove(asignacion);
+        asignacion.setRecurso(null);
     }
 }

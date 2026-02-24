@@ -1,7 +1,10 @@
 package com.example.gestiontareas.model;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -12,71 +15,100 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-@Entity
 
+@Entity
 public class Proyecto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
+
     private String descripcion;
+
     private String estado = "ACTIVO";
-    
+
+    private LocalDate fechaInicio;
+
+    /* ================= RELACIÓN CON USUARIO ================= */
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     @JsonIgnore
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL)
+    /* ================= RELACIÓN CON TAREAS ================= */
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Tarea> tareas;
+    private List<Tarea> tareas = new ArrayList<>();
 
-	public Long getId() {
-		return id;
-	}
+    /* ================= RELACIÓN CON RECURSOS ================= */
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recurso> recursos = new ArrayList<>();
 
-	public String getNombre() {
-		return nombre;
-	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    /* ================= GETTERS & SETTERS ================= */
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public Usuario getUsuario() {
-		return usuario;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-	public List<Tarea> getTareas() {
-		return tareas;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	public void setTareas(List<Tarea> tareas) {
-		this.tareas = tareas;
-	}
+    public String getEstado() {
+        return estado;
+    }
 
-	public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-		
-	}
-    
-    
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
+    public List<Recurso> getRecursos() {
+        return recursos;
+    }
+
+    public void setRecursos(List<Recurso> recursos) {
+        this.recursos = recursos;
+    }
+}

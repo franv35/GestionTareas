@@ -61,13 +61,4 @@ public class TareaController {
         return ResponseEntity.ok(tareaService.obtenerTarea(id));
     }
     
-    @PostMapping("/{tareaId}/recursos/{recursoId}")
-    public ResponseEntity<Tarea> asignarRecurso(
-            @PathVariable Long tareaId,
-            @PathVariable Long recursoId) {
-
-        return ResponseEntity.ok(
-            tareaService.asignarRecurso(tareaId, recursoId)
-        );
-    }
 }

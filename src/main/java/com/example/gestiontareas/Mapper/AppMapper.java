@@ -2,14 +2,8 @@ package com.example.gestiontareas.Mapper;
 
 import java.util.stream.Collectors;
 
-import com.example.gestiontareas.dto.Response.ProyectoResponse;
-import com.example.gestiontareas.dto.Response.RecursoResponse;
-import com.example.gestiontareas.dto.Response.TareaResponse;
-import com.example.gestiontareas.dto.Response.UsuarioResponse;
-import com.example.gestiontareas.model.Proyecto;
-import com.example.gestiontareas.model.Recurso;
-import com.example.gestiontareas.model.Tarea;
-import com.example.gestiontareas.model.Usuario;
+import com.example.gestiontareas.dto.Response.*;
+import com.example.gestiontareas.model.*;
 
 public class AppMapper {
 
@@ -55,16 +49,32 @@ public class AppMapper {
     public static RecursoResponse toRecursoResponse(Recurso recurso) {
         if (recurso == null) return null;
 
-        RecursoResponse r = new RecursoResponse();
-        r.setId(recurso.getId());
-        r.setNombre(recurso.getNombre());
-        r.setCantidad(recurso.getCantidad());
-        r.setUnidad(recurso.getUnidad());
+        RecursoResponse res = new RecursoResponse();
+        res.setId(recurso.getId());
+        res.setNombre(recurso.getNombre());
+        res.setCantidad(recurso.getStockDisponible());
+        res.setUnidad(recurso.getUnidad());
+
+        return res;
+    }
+
+    /* =========================
+       TAREA_RECURSO
+       ========================= */
+    public static TareaRecursoResponse toTareaRecursoResponse(TareaRecurso tr) {
+        if (tr == null) return null;
+
+        TareaRecursoResponse r = new TareaRecursoResponse();
+        r.setRecursoId(tr.getRecurso().getId());
+        r.setNombreRecurso(tr.getRecurso().getNombre());
+        r.setCantidadAsignada(tr.getCantidadAsignada());
+        r.setUnidad(tr.getRecurso().getUnidad());
+
         return r;
     }
 
     /* =========================
-       TAREA (ÚNICA)
+       TAREA
        ========================= */
     public static TareaResponse toTareaResponse(Tarea tarea) {
         if (tarea == null) return null;
@@ -73,14 +83,14 @@ public class AppMapper {
         r.setId(tarea.getId());
         r.setTitulo(tarea.getTitulo());
         r.setDescripcion(tarea.getDescripcion());
-        r.setEstado(tarea.getEstado()); // ENUM EstadoTarea
+        r.setEstado(tarea.getEstado());
         r.setProyectoId(tarea.getProyecto().getId());
 
-        if (tarea.getRecursos() != null) {
-            r.setRecursos(
-                tarea.getRecursos()
+        if (tarea.getAsignaciones() != null) {
+            r.setAsignaciones(
+                tarea.getAsignaciones()
                      .stream()
-                     .map(AppMapper::toRecursoResponse)
+                     .map(AppMapper::toTareaRecursoResponse)
                      .collect(Collectors.toList())
             );
         }

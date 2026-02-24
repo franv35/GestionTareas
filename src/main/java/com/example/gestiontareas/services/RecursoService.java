@@ -12,4 +12,8 @@ public interface RecursoService {
     List<RecursoResponse> listAll();
 
     RecursoResponse getById(Long id);
+
+    RecursoResponse update(Long id, RecursoRequest req);
+
+    void delete(Long id);
 }

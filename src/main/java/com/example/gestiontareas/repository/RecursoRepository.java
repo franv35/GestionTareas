@@ -8,3 +8,4 @@ import com.example.gestiontareas.model.Recurso;
 @Repository
 public interface RecursoRepository extends JpaRepository<Recurso, Long> {
 }
+

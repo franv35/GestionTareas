@@ -13,7 +13,7 @@ public class TareaResponse {
     private LocalDate fecha;
     private EstadoTarea estado;
     private Long proyectoId;
-    private List<RecursoResponse> recursos;
+    private List<TareaRecursoResponse> asignaciones;
 
     public Long getId() {
         return id;
