@@ -13,7 +13,14 @@ public class TareaResponse {
     private LocalDate fecha;
     private EstadoTarea estado;
     private Long proyectoId;
+
+    // 🔹 Lista de asignaciones de recursos (TareaRecursoResponse)
     private List<TareaRecursoResponse> asignaciones;
+
+    // 🔹 Lista de recursos simplificada para el front (RecursoResponse)
+    private List<RecursoResponse> recursos;
+
+    // ===== Getters y Setters =====
 
     public Long getId() {
         return id;
@@ -61,6 +68,14 @@ public class TareaResponse {
 
     public void setProyectoId(Long proyectoId) {
         this.proyectoId = proyectoId;
+    }
+
+    public List<TareaRecursoResponse> getAsignaciones() {
+        return asignaciones;
+    }
+
+    public void setAsignaciones(List<TareaRecursoResponse> asignaciones) {
+        this.asignaciones = asignaciones;
     }
 
     public List<RecursoResponse> getRecursos() {

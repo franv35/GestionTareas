@@ -86,11 +86,22 @@ public class AppMapper {
         r.setEstado(tarea.getEstado());
         r.setProyectoId(tarea.getProyecto().getId());
 
+        // 🔹 Asignaciones de recursos
         if (tarea.getAsignaciones() != null) {
             r.setAsignaciones(
                 tarea.getAsignaciones()
                      .stream()
                      .map(AppMapper::toTareaRecursoResponse)
+                     .collect(Collectors.toList())
+            );
+
+            // 🔹 Lista de recursos para el front
+            r.setRecursos(
+                tarea.getAsignaciones()
+                     .stream()
+                     .map(TareaRecurso::getRecurso)
+                     .distinct() // opcional, evita repetir recursos
+                     .map(AppMapper::toRecursoResponse)
                      .collect(Collectors.toList())
             );
         }

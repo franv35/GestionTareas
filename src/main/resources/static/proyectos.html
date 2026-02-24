@@ -76,17 +76,31 @@
   </main>
 </div>
 
-<!-- MODAL PROYECTO -->
-<div id="modalProyecto" class="modal">
+<!-- MODAL CREAR PROYECTO -->
+<div id="modalCrearProyecto" class="modal">
   <div class="modal-content">
-    <span class="close" id="cerrarProyecto">&times;</span>
+    <span class="close" id="cerrarCrearProyecto">&times;</span>
     <h3>Crear Proyecto</h3>
 
-    <form id="formProyecto" class="form">
-      <input id="proyectoNombre" placeholder="Nombre" required />
-      <textarea id="proyectoDescripcion" placeholder="Descripción"></textarea>
-      <input type="date" id="proyectoFecha" required />
+    <form id="formCrearProyecto" class="form">
+      <input id="crearProyectoNombre" placeholder="Nombre" required />
+      <textarea id="crearProyectoDescripcion" placeholder="Descripción"></textarea>
+      <input type="date" id="crearProyectoFecha" required />
       <button class="btn">Crear</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PROYECTO -->
+<div id="modalEditarProyecto" class="modal">
+  <div class="modal-content">
+    <span class="close" id="cerrarEditarProyecto">&times;</span>
+    <h3>Editar Proyecto</h3>
+
+    <form id="formEditarProyecto" class="form">
+      <input id="editarProyectoNombre" placeholder="Nombre" required />
+      <textarea id="editarProyectoDescripcion" placeholder="Descripción"></textarea>
+      <button class="btn">Guardar Cambios</button>
     </form>
   </div>
 </div>

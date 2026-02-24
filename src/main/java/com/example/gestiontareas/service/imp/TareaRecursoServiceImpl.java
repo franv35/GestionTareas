@@ -128,4 +128,9 @@ public class TareaRecursoServiceImpl implements TareaRecursoService {
             tareaRecursoRepository.delete(asignacion);
         }
     }
+    
+    @Override
+    public List<TareaRecurso> listarPorTarea(Long tareaId) {
+        return tareaRecursoRepository.findByTareaId(tareaId);
+    }
 }

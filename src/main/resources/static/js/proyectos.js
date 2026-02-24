@@ -24,67 +24,62 @@ function authHeaders() {
 }
 
 /* ======================================================
-   USER INFO
-====================================================== */
-const userInfo = document.getElementById("userInfo");
-if (userInfo) {
-  userInfo.innerText = `${usuarioNombre} · ${usuarioEmail}`;
-}
-
-/* ======================================================
    ELEMENTOS
 ====================================================== */
-const proyectosGrid = document.getElementById("proyectosGrid");
+const userInfo = document.getElementById("userInfo");
+userInfo && (userInfo.innerText = `${usuarioNombre} · ${usuarioEmail}`);
 
+const proyectosGrid = document.getElementById("proyectosGrid");
 const statProyectos = document.getElementById("statProyectos");
 const statProceso = document.getElementById("statProceso");
 const statCompletadas = document.getElementById("statCompletadas");
 
-const modalProyecto = document.getElementById("modalProyecto");
+const modalCrearProyecto = document.getElementById("modalCrearProyecto");
+const modalEditarProyecto = document.getElementById("modalEditarProyecto");
 const modalRecurso = document.getElementById("modalRecurso");
 
 const btnAbrirProyecto = document.getElementById("btnAbrirProyecto");
 const btnAbrirRecurso = document.getElementById("btnAbrirRecurso");
-const cerrarProyecto = document.getElementById("cerrarProyecto");
+const cerrarCrearProyecto = document.getElementById("cerrarCrearProyecto");
+const cerrarEditarProyecto = document.getElementById("cerrarEditarProyecto");
 const cerrarRecurso = document.getElementById("cerrarRecurso");
 const logoutBtn = document.getElementById("logoutBtn");
 
-const formProyecto = document.getElementById("formProyecto");
+const formCrearProyecto = document.getElementById("formCrearProyecto");
+const formEditarProyecto = document.getElementById("formEditarProyecto");
 const formRecurso = document.getElementById("formRecurso");
 
-/* ======================================================
-   MODALES
-====================================================== */
+/* Inputs */
+const crearProyectoNombre = document.getElementById("crearProyectoNombre");
+const crearProyectoDescripcion = document.getElementById("crearProyectoDescripcion");
+const crearProyectoFecha = document.getElementById("crearProyectoFecha");
 
+const editarProyectoNombre = document.getElementById("editarProyectoNombre");
+const editarProyectoDescripcion = document.getElementById("editarProyectoDescripcion");
+
+/* ======================================================
+   FUNCIONES MODALES
+====================================================== */
 function abrirModal(modal) {
   modal?.classList.add("open");
 }
-
 function cerrarModal(modal) {
   modal?.classList.remove("open");
 }
 
-btnAbrirProyecto?.addEventListener("click", () => {
-  abrirModal(modalProyecto);
-});
+/* Abrir/Cerrar modales */
+btnAbrirProyecto?.addEventListener("click", () => abrirModal(modalCrearProyecto));
+btnAbrirRecurso?.addEventListener("click", () => abrirModal(modalRecurso));
 
-btnAbrirRecurso?.addEventListener("click", () => {
-  abrirModal(modalRecurso);
-});
-
-cerrarProyecto?.addEventListener("click", () => {
-  cerrarModal(modalProyecto);
-});
-
-cerrarRecurso?.addEventListener("click", () => {
-  cerrarModal(modalRecurso);
-});
+cerrarCrearProyecto?.addEventListener("click", () => cerrarModal(modalCrearProyecto));
+cerrarEditarProyecto?.addEventListener("click", () => cerrarModal(modalEditarProyecto));
+cerrarRecurso?.addEventListener("click", () => cerrarModal(modalRecurso));
 
 window.addEventListener("click", e => {
-  if (e.target === modalProyecto) cerrarModal(modalProyecto);
+  if (e.target === modalCrearProyecto) cerrarModal(modalCrearProyecto);
+  if (e.target === modalEditarProyecto) cerrarModal(modalEditarProyecto);
   if (e.target === modalRecurso) cerrarModal(modalRecurso);
 });
-
 
 /* ======================================================
    LOGOUT
@@ -99,10 +94,9 @@ logoutBtn?.addEventListener("click", () => {
 ====================================================== */
 async function cargarProyectos() {
   try {
-    const res = await fetch(
-      `${API}/proyectos/usuario/${usuarioId}`,
-      { headers: authHeaders() }
-    );
+    const res = await fetch(`${API}/proyectos/usuario/${usuarioId}`, {
+      headers: authHeaders()
+    });
 
     if (!res.ok) throw new Error("Error auth");
 
@@ -115,31 +109,26 @@ async function cargarProyectos() {
     let enProceso = 0;
     let completadas = 0;
 
-    /* ---------- SIN PROYECTOS ---------- */
+    // ----- SIN PROYECTOS -----
     if (proyectos.length === 0) {
       proyectosGrid.innerHTML = `
         <div class="empty-state">
-          <p>No tenés proyectos todavía.</p>
-          <button class="btn" id="btnCrearPrimerProyecto">
-            Crear mi primer proyecto
-          </button>
+          <h3>📭 No tenés proyectos todavía</h3>
+          <p>Creá tu primer proyecto para empezar a organizar tareas</p>
+          <button class="btn" id="btnCrearPrimerProyecto">➕ Crear Proyecto</button>
         </div>
       `;
-
       document
         .getElementById("btnCrearPrimerProyecto")
-        .addEventListener("click", () => {
-          modalProyecto.classList.remove("hidden");
-        });
+        .addEventListener("click", () => abrirModal(modalCrearProyecto));
 
       statProceso.innerText = 0;
       statCompletadas.innerText = 0;
       return;
     }
 
-    /* ---------- CON PROYECTOS ---------- */
+    // ----- CON PROYECTOS -----
     proyectos.forEach(p => {
-
       if (Array.isArray(p.tareas)) {
         p.tareas.forEach(t => {
           if (t.estado === "EN_PROCESO") enProceso++;
@@ -156,13 +145,10 @@ async function cargarProyectos() {
             ${p.nombre}
           </a>
         </h3>
-
         <p>${p.descripcion || "Sin descripción"}</p>
-
         ${p.estado === "TERMINADO"
           ? "<p style='color:#2e7d32;font-weight:bold;'>Proyecto terminado</p>"
           : ""}
-
         <div class="proyecto-actions">
           <button class="btn-editar" data-id="${p.id}">✏ Editar</button>
           <button class="btn-eliminar" data-id="${p.id}">🗑 Eliminar</button>
@@ -171,14 +157,13 @@ async function cargarProyectos() {
             : ""}
         </div>
       `;
-
       proyectosGrid.appendChild(card);
     });
 
     statProceso.innerText = enProceso;
     statCompletadas.innerText = completadas;
 
-    /* ---------- ELIMINAR ---------- */
+    // ----- ELIMINAR -----
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -193,7 +178,7 @@ async function cargarProyectos() {
       });
     });
 
-    /* ---------- EDITAR ---------- */
+    // ----- EDITAR -----
     document.querySelectorAll(".btn-editar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -201,33 +186,34 @@ async function cargarProyectos() {
         const res = await fetch(`${API}/proyectos/${id}`, {
           headers: authHeaders()
         });
-
         const proyecto = await res.json();
 
-        proyectoNombre.value = proyecto.nombre;
-        proyectoDescripcion.value = proyecto.descripcion || "";
+        editarProyectoNombre.value = proyecto.nombre;
+        editarProyectoDescripcion.value = proyecto.descripcion || "";
 
-        formProyecto.onsubmit = async (e) => {
+        // Abrir modal edición
+        abrirModal(modalEditarProyecto);
+
+        // Submisión de edición
+        formEditarProyecto.onsubmit = async e => {
           e.preventDefault();
 
           await fetch(`${API}/proyectos/${id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify({
-              nombre: proyectoNombre.value,
-              descripcion: proyectoDescripcion.value
+              nombre: editarProyectoNombre.value,
+              descripcion: editarProyectoDescripcion.value
             })
           });
 
-          modalProyecto.classList.add("hidden");
+          cerrarModal(modalEditarProyecto);
           cargarProyectos();
         };
-
-        modalProyecto.classList.remove("hidden");
       });
     });
 
-    /* ---------- TERMINAR ---------- */
+    // ----- TERMINAR -----
     document.querySelectorAll(".btn-terminar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -251,13 +237,13 @@ async function cargarProyectos() {
 /* ======================================================
    CREAR PROYECTO
 ====================================================== */
-formProyecto?.addEventListener("submit", async e => {
+formCrearProyecto?.addEventListener("submit", async e => {
   e.preventDefault();
 
   const body = {
-    nombre: proyectoNombre.value.trim(),
-    descripcion: proyectoDescripcion.value.trim(),
-    fechaInicio: proyectoFecha.value
+    nombre: crearProyectoNombre.value.trim(),
+    descripcion: crearProyectoDescripcion.value.trim(),
+    fechaInicio: crearProyectoFecha.value
   };
 
   if (!body.nombre) {
@@ -265,27 +251,24 @@ formProyecto?.addEventListener("submit", async e => {
     return;
   }
 
-  const res = await fetch(
-    `${API}/proyectos/usuario/${usuarioId}`,
-    {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify(body)
-    }
-  );
+  const res = await fetch(`${API}/proyectos/usuario/${usuarioId}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(body)
+  });
 
   if (!res.ok) {
     alert("Error al crear proyecto");
     return;
   }
 
-  modalProyecto.classList.add("hidden");
-  formProyecto.reset();
+  cerrarModal(modalCrearProyecto);
+  formCrearProyecto.reset();
   cargarProyectos();
 });
 
 /* ======================================================
-   CREAR RECURSO (GLOBAL)
+   CREAR RECURSO
 ====================================================== */
 formRecurso?.addEventListener("submit", async e => {
   e.preventDefault();
@@ -312,7 +295,7 @@ formRecurso?.addEventListener("submit", async e => {
     return;
   }
 
-  modalRecurso.classList.add("hidden");
+  cerrarModal(modalRecurso);
   formRecurso.reset();
 });
 
