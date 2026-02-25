@@ -4,8 +4,17 @@ public class RecursoResponse {
 
     private Long id;
     private String nombre;
-    private int cantidad;
-    private String unidadMedida;
+
+    private int stockTotal;
+    private int stockDisponible;
+
+    private String unidad;
+
+    private Long proyectoId;
+
+    /* =========================
+       GETTERS Y SETTERS
+       ========================= */
 
     public Long getId() {
         return id;
@@ -23,19 +32,35 @@ public class RecursoResponse {
         this.nombre = nombre;
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public int getStockTotal() {
+        return stockTotal;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
+    public void setStockTotal(int stockTotal) {
+        this.stockTotal = stockTotal;
+    }
+
+    public int getStockDisponible() {
+        return stockDisponible;
+    }
+
+    public void setStockDisponible(int stockDisponible) {
+        this.stockDisponible = stockDisponible;
     }
 
     public String getUnidad() {
-        return unidadMedida;
+        return unidad;
     }
 
-    public void setUnidad(String unidadMedida) {
-        this.unidadMedida = unidadMedida;
+    public void setUnidad(String unidad) {
+        this.unidad = unidad;
+    }
+
+    public Long getProyectoId() {
+        return proyectoId;
+    }
+
+    public void setProyectoId(Long proyectoId) {
+        this.proyectoId = proyectoId;
     }
 }

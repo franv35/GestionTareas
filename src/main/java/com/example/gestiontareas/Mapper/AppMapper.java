@@ -47,15 +47,20 @@ public class AppMapper {
        RECURSO
        ========================= */
     public static RecursoResponse toRecursoResponse(Recurso recurso) {
-        if (recurso == null) return null;
 
-        RecursoResponse res = new RecursoResponse();
-        res.setId(recurso.getId());
-        res.setNombre(recurso.getNombre());
-        res.setCantidad(recurso.getStockDisponible());
-        res.setUnidad(recurso.getUnidad());
+        RecursoResponse response = new RecursoResponse();
 
-        return res;
+        response.setId(recurso.getId());
+        response.setNombre(recurso.getNombre());
+        response.setStockTotal(recurso.getStockTotal());
+        response.setStockDisponible(recurso.getStockDisponible());
+        response.setUnidad(recurso.getUnidad());
+
+        if (recurso.getProyecto() != null) {
+            response.setProyectoId(recurso.getProyecto().getId());
+        }
+
+        return response;
     }
 
     /* =========================

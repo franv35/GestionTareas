@@ -1,5 +1,7 @@
 package com.example.gestiontareas.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -60,5 +62,6 @@ public class TareaController {
     public ResponseEntity<Tarea> obtenerTarea(@PathVariable Long id) {
         return ResponseEntity.ok(tareaService.obtenerTarea(id));
     }
+    
     
 }
