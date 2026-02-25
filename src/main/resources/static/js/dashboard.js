@@ -446,15 +446,32 @@ btnCrearRecursoModal?.addEventListener("click", async () => {
 });
 
 /* ======================================================
+   LLAMADO AL PROYECTO PARA DATOS
+====================================================== */
+
+async function fetchProyecto() {
+  try {
+    const res = await fetch(
+      `${API}/proyectos/${proyectoId}`,
+      { headers: authHeaders() }
+    );
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+/* ======================================================
    REFRESH
 ====================================================== */
 async function refreshAll() {
 
-  const [tareas, recursos] =
-    await Promise.all([
-      fetchTareas(),
-      fetchRecursos()
-    ]);
+	const [tareas, recursos, proyecto] =
+	  await Promise.all([
+	    fetchTareas(),
+	    fetchRecursos(),
+	    fetchProyecto()
+	  ]);
 
   const pendientes =
     tareas.filter(t => t.estado === "PENDIENTE");
@@ -474,10 +491,12 @@ async function refreshAll() {
   statTerminadas.textContent = terminadas.length;
   statRecursos.textContent = recursos.length;
 
-  if (tareas.length &&
-      tareas[0].proyecto?.fechaInicio) {
+  if (proyecto?.fechaInicio) {
+    const fecha = new Date(proyecto.fechaInicio);
     statFechaInicio.textContent =
-      tareas[0].proyecto.fechaInicio;
+      fecha.toLocaleDateString("es-AR");
+  } else {
+    statFechaInicio.textContent = "—";
   }
 
   renderTareas(listaPendientes, pendientes);
