@@ -58,8 +58,6 @@ const countPendientes = document.getElementById("countPendientes");
 const countEnProceso = document.getElementById("countEnProceso");
 const countTerminadas = document.getElementById("countTerminadas");
 
-const modalRecursos = document.getElementById("modalRecursos");
-const closeRecursos = document.getElementById("closeRecursos");
 const listaRecursos = document.getElementById("listaRecursos");
 
 const openRecursosBtn = document.getElementById("openRecursos");
@@ -109,22 +107,47 @@ modalTarea?.addEventListener("click", () => cerrarModal(modalTarea));
 modalTarea.querySelector(".modal-content")
   ?.addEventListener("click", stopPropagation);
 
-// Modal recursos
-openRecursosBtn?.addEventListener("click", async () => {
-  abrirModal(modalRecursos);
-  const recursos = await fetchRecursos();
-  renderListaRecursos(recursos);
-});
+  /* ======================================================
+     MODALES RECURSOS
+  ====================================================== */
 
-openCrearRecursoBtn?.addEventListener("click", () => {
-  abrirModal(modalRecursos);
-});
+  const modalVerRecursos = document.getElementById("modalVerRecursos");
+  const modalCrearRecurso = document.getElementById("modalCrearRecurso");
 
-closeRecursos?.addEventListener("click", () => cerrarModal(modalRecursos));
-modalRecursos?.addEventListener("click", () => cerrarModal(modalRecursos));
-modalRecursos.querySelector(".modal-content")
-  ?.addEventListener("click", stopPropagation);
+  const closeVerRecursos = document.getElementById("closeVerRecursos");
+  const closeCrearRecurso = document.getElementById("closeCrearRecurso");
 
+  // --- Abrir Ver Recursos
+  openRecursosBtn?.addEventListener("click", async () => {
+    abrirModal(modalVerRecursos);
+    const recursos = await fetchRecursos();
+    renderListaRecursos(recursos);
+  });
+
+  // --- Abrir Crear Recurso
+  openCrearRecursoBtn?.addEventListener("click", () => {
+    abrirModal(modalCrearRecurso);
+  });
+
+  // --- Cerrar Ver Recursos
+  closeVerRecursos?.addEventListener("click", () =>
+    cerrarModal(modalVerRecursos)
+  );
+  modalVerRecursos?.addEventListener("click", () =>
+    cerrarModal(modalVerRecursos)
+  );
+  modalVerRecursos.querySelector(".modal-content")
+    ?.addEventListener("click", stopPropagation);
+
+  // --- Cerrar Crear Recurso
+  closeCrearRecurso?.addEventListener("click", () =>
+    cerrarModal(modalCrearRecurso)
+  );
+  modalCrearRecurso?.addEventListener("click", () =>
+    cerrarModal(modalCrearRecurso)
+  );
+  modalCrearRecurso.querySelector(".modal-content")
+    ?.addEventListener("click", stopPropagation);
 /* ======================================================
    FETCH
 ====================================================== */
@@ -231,18 +254,35 @@ function renderRecursos(recursos) {
 }
 
 function renderListaRecursos(recursos) {
+
   listaRecursos.innerHTML = "";
 
   if (!recursos.length) {
-    listaRecursos.innerHTML = "<li>No hay recursos aún</li>";
+    listaRecursos.innerHTML = `
+      <div class="tabla-row empty-row">
+        <span>No hay recursos aún</span>
+        <span>—</span>
+        <span>—</span>
+        <span>—</span>
+      </div>`;
     return;
   }
 
   recursos.forEach(r => {
-    const li = document.createElement("li");
-    li.textContent =
-      `${r.nombre} - ${r.stockDisponible}/${r.stockTotal} ${r.unidad}`;
-    listaRecursos.appendChild(li);
+
+    const row = document.createElement("div");
+    row.className = "tabla-row";
+
+    row.innerHTML = `
+      <span>${r.nombre}</span>
+      <span class="${r.stockDisponible === 0 ? 'stock-empty' : ''}">
+        ${r.stockDisponible}
+      </span>
+      <span>${r.stockTotal}</span>
+      <span>${r.unidad}</span>
+    `;
+
+    listaRecursos.appendChild(row);
   });
 }
 
@@ -333,7 +373,7 @@ btnCrearRecursoModal?.addEventListener("click", async () => {
   const cantidad = parseInt(recursoCantidad.value, 10);
   const unidad = recursoUnidad.value.trim();
 
-  if (!nombre || !cantidad || !unidad) {
+  if (!nombre || isNaN(cantidad) || cantidad < 0 || !unidad) {
     alert("Completá todos los campos");
     return;
   }
@@ -359,9 +399,7 @@ btnCrearRecursoModal?.addEventListener("click", async () => {
   recursoCantidad.value = "";
   recursoUnidad.value = "";
 
-  const recursos = await fetchRecursos();
-  renderRecursos(recursos);
-  renderListaRecursos(recursos);
+  cerrarModal(modalCrearRecurso);
 
   refreshAll();
 });

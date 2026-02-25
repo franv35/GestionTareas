@@ -74,21 +74,59 @@
       </section>
     </main>
   </div>
-
-  <!-- Modal Recursos -->
-  <div id="modalRecursos" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeRecursos" aria-label="Cerrar">&times;</span>
-      <h3>Recursos</h3>
-      <div class="recurso-form">
-        <input id="recursoNombre" placeholder="Nombre del recurso" />
-        <input id="recursoCantidad" type="number" min="1" placeholder="Cantidad" />
-        <input id="recursoUnidad" placeholder="Unidad de medida" />
-        <button type="button" id="btnCrearRecursoModal" class="btn">Crear</button>
+  
+  <!-- =============================
+       MODAL VER RECURSOS
+  ============================= -->
+  <div id="modalVerRecursos" class="modal modal-recursos">
+    <div class="modal-content modal-content-wide">
+      <div class="modal-header">
+        <h3>Recursos del Proyecto</h3>
+        <button id="closeVerRecursos">✕</button>
       </div>
-      <ul id="listaRecursos" class="list">
-        <li class="empty-placeholder">No hay recursos creados</li>
-      </ul>
+
+      <div class="tabla-recursos">
+        <div class="tabla-header">
+          <span>Recurso</span>
+          <span>Stock Disponible</span>
+          <span>Stock Total</span>
+          <span>Unidad</span>
+        </div>
+
+        <div id="listaRecursos" class="tabla-body"></div>
+      </div>
+
+    </div>
+  </div>
+  <!-- Modal Crear Recursos -->
+   <div id="modalCrearRecurso" class="modal modal-crear-recurso">
+    <div class="modal-content modal-form">
+
+      <button class="modal-close" id="closeCrearRecurso">✕</button>
+
+      <h3>Crear Recurso</h3>
+
+      <form class="form-vertical">
+        <div class="form-group">
+          <label>Nombre del recurso</label>
+          <input type="text" id="recursoNombre">
+        </div>
+
+        <div class="form-group">
+          <label>Cantidad inicial</label>
+          <input type="number" id="recursoCantidad">
+        </div>
+
+        <div class="form-group">
+          <label>Unidad de medida</label>
+          <input type="text" id="recursoUnidad">
+        </div>
+
+        <button type="button" id="btnCrearRecursoModal" class="btn-primary">
+          Crear Recurso
+        </button>
+      </form>
+
     </div>
   </div>
 
