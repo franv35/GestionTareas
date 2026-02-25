@@ -521,6 +521,91 @@ button:hover {
   text-overflow: ellipsis;
 }
 
+/* ===============================
+   DROPDOWN MULTI SELECT MEJORADO
+================================ */
+
+.dropdown-multi {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-selected {
+  padding: 10px 14px;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.dropdown-selected:hover {
+  border-color: #3b82f6;
+}
+
+/* Contenedor opciones */
+.dropdown-options {
+  position: absolute;
+  top: 105%;
+  left: 0;
+  right: 0;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  z-index: 100;
+  padding: 6px 0; /* evita que termine abruptamente */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.dropdown-options.open {
+  display: block;
+}
+
+/* Cada opción */
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+/* Hover suave */
+.dropdown-option:hover {
+  background-color: #334155;
+}
+
+/* Checkbox compacto */
+.dropdown-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  flex-shrink: 0; /* no crece */
+}
+
+/* Texto ocupa todo el espacio restante */
+.dropdown-option span {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.3;
+  color: #e2e8f0;
+}
+
+/* Scroll más prolijo */
+.dropdown-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-options::-webkit-scrollbar-thumb {
+  background-color: #475569;
+  border-radius: 10px;
+}
+
 /* ======================================================
    RESPONSIVE
 ====================================================== */

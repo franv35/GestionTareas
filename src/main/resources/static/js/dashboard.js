@@ -75,6 +75,12 @@ const statTerminadas = document.getElementById("statTerminadas");
 const statRecursos = document.getElementById("statRecursos");
 const statFechaInicio = document.getElementById("statFechaInicio");
 
+const dropdownRecursos = document.getElementById("dropdownRecursos");
+const dropdownRecursosSelected = document.getElementById("dropdownRecursosSelected");
+const dropdownRecursosOptions = document.getElementById("dropdownRecursosOptions");
+
+let recursosSeleccionados = new Set();
+
 /* ======================================================
    USER INFO
 ====================================================== */
@@ -233,25 +239,62 @@ function renderTareas(listaEl, tareas) {
    RENDER RECURSOS
 ====================================================== */
 function renderRecursos(recursos) {
-  tareaRecursos.innerHTML = "";
+
+  dropdownRecursosOptions.innerHTML = "";
+  recursosSeleccionados.clear();
 
   if (!recursos.length) {
-    const opt = document.createElement("option");
-    opt.textContent = "No hay recursos creados";
-    opt.disabled = true;
-    opt.selected = true;
-    tareaRecursos.appendChild(opt);
+    dropdownRecursosSelected.textContent = "No hay recursos";
     return;
   }
 
   recursos.forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r.id;
-    opt.textContent =
-      `${r.nombre} (${r.stockDisponible}/${r.stockTotal} ${r.unidad})`;
-    tareaRecursos.appendChild(opt);
+
+    const div = document.createElement("div");
+    div.className = "dropdown-option";
+
+    div.innerHTML = `
+      <input type="checkbox" value="${r.id}">
+      <span>${r.nombre} (${r.stockDisponible}/${r.stockTotal} ${r.unidad})</span>
+    `;
+
+    const checkbox = div.querySelector("input");
+
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        recursosSeleccionados.add(r.id);
+      } else {
+        recursosSeleccionados.delete(r.id);
+      }
+      actualizarTextoSeleccionados();
+    });
+
+    dropdownRecursosOptions.appendChild(div);
   });
+
+  actualizarTextoSeleccionados();
 }
+
+function actualizarTextoSeleccionados() {
+  if (recursosSeleccionados.size === 0) {
+    dropdownRecursosSelected.textContent = "Seleccionar recursos";
+  } else {
+    dropdownRecursosSelected.textContent =
+      `${recursosSeleccionados.size} recurso(s) seleccionado(s)`;
+  }
+}
+
+dropdownRecursosSelected.addEventListener("click", () => {
+  dropdownRecursosOptions.classList.toggle("open");
+});
+
+document.addEventListener("click", (e) => {
+  if (!dropdownRecursos.contains(e.target)) {
+    dropdownRecursosOptions.classList.remove("open");
+  }
+});
+
+
 
 function renderListaRecursos(recursos) {
 
@@ -333,9 +376,7 @@ formTarea?.addEventListener("submit", async e => {
     return;
   }
 
-  const recursosSeleccionados =
-    Array.from(tareaRecursos.selectedOptions)
-      .map(o => o.value);
+  const recursosArray = Array.from(recursosSeleccionados);
 
   const res = await fetch(
     `${API}/tareas/proyecto/${proyectoId}`,
@@ -346,7 +387,7 @@ formTarea?.addEventListener("submit", async e => {
         titulo,
         descripcion,
         fecha,
-        recursos: recursosSeleccionados,
+        recursos: recursosArray,
       }),
     }
   );

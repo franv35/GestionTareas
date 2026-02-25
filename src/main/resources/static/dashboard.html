@@ -148,11 +148,21 @@
           <input id="tareaFecha" type="date" required name="fecha"/>
         </label>
 
-        <label>Recursos
-          <select id="tareaRecursos" multiple name="recursos">
-            <!-- opciones dinámicas -->
-          </select>
-        </label>
+		<div class="form-group">
+		  <label>Recursos</label>
+
+		  <div class="dropdown-multi" id="dropdownRecursos">
+
+		    <div class="dropdown-selected" id="dropdownRecursosSelected">
+		      Seleccionar recursos
+		    </div>
+
+		    <div class="dropdown-options" id="dropdownRecursosOptions">
+		      <!-- opciones dinámicas -->
+		    </div>
+
+		  </div>
+		</div>
 
         <div class="actions">
           <button type="submit" id="btnCrearTarea" class="btn">Crear</button>
